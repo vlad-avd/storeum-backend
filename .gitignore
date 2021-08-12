@@ -1,0 +1,25 @@
+# Mac
+.DS_Store
+
+# VS Code
+**/*.vscode
+**/*.devcontainer
+
+# IntelliJ, Eclipse, and VSCode
+**/*.classpath
+**/*.idea
+**/*.project
+**/*.settings
+**/*.iml
+**/out
+**/bin
+
+# Gradle
+**/.gradle
+**/build
+**/classes
+*.class
+
+# Logs
+*.log
+
