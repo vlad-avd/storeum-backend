@@ -40,4 +40,11 @@ public class FolderController {
 //        folders.forEach(System.out::println);
         return folders;
     }
+
+    @GetMapping("/{id}")
+    public Folder getFolder(@PathVariable Long id) {
+        Folder folders = folderRepository.findById(id).get();
+//        folders.forEach(System.out::println);
+        return folders;
+    }
 }

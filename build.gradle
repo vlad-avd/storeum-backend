@@ -5,7 +5,7 @@ plugins {
 }
 
 group = 'com.avdienko'
-version = '0.0.1-SNAPSHOT'
+version = '1.0.0'
 sourceCompatibility = '11'
 
 configurations {
@@ -24,7 +24,7 @@ dependencies {
     implementation 'org.springframework.boot:spring-boot-starter-web:2.5.3'
     implementation 'org.springframework.boot:spring-boot-starter-validation:2.5.3'
     implementation 'io.jsonwebtoken:jjwt:0.9.1'
-
+    implementation 'org.projectlombok:lombok:1.18.20'
 
     compileOnly 'org.projectlombok:lombok:1.18.20'
     annotationProcessor 'org.projectlombok:lombok:1.18.20'

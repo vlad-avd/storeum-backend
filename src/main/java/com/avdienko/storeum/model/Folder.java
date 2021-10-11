@@ -14,8 +14,8 @@ import java.util.List;
 @Getter
 @Setter
 @NoArgsConstructor
-//@JsonIdentityInfo(generator = ObjectIdGenerators.PropertyGenerator.class, property = "id")
-//@ToString
+@JsonIdentityInfo(generator = ObjectIdGenerators.PropertyGenerator.class, property = "id", scope = Folder.class, resolver = DedupingObjectIdResolver.class)
+@ToString
 public class Folder {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -32,7 +32,7 @@ public class Folder {
 
     @ManyToOne
 //    @JsonManagedReference
-    @JsonIgnore
+//    @JsonIgnore
     private Folder parentFolder;
 
     @OneToMany(mappedBy = "folder", cascade = CascadeType.ALL, orphanRemoval = true)
