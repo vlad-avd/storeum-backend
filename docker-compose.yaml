@@ -1,0 +1,28 @@
+version: "3.7"
+
+services:
+  app:
+    build: .
+    restart: always
+    ports:
+      - "8080:8080"
+    depends_on:
+      - postgres
+    environment:
+      - SPRING_DATASOURCE_URL=jdbc:postgresql://postgres:5432/storeum_mvp
+      - SPRING_DATASOURCE_USERNAME=postgres
+      - SPRING_DATASOURCE_PASSWORD=2281488
+      - SPRING_JPA_HIBERNATE_DDL_AUTO=update
+  postgres:
+    image: "postgres:14-alpine"
+    restart: always
+    volumes: 
+      - pg_data:/var/lib/postgresql/data
+    ports:
+      - "5433:5432"
+    environment:
+      - POSTGRES_DB=storeum_mvp
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=2281488
+volumes:
+  pg_data:

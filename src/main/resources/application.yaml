@@ -1,11 +1,16 @@
 spring:
+  sql:
+    init:
+      mode: always
   datasource:
-    url: jdbc:postgresql://localhost:5432/storeum_mvp
+    initialization-mode: always
+    url: jdbc:postgresql://postgres:5432/storeum_mvp
     username: postgres
-    password: ${POSTGRES_PWD}
+    password: 2281488
   jpa:
+    defer-datasource-initialization: true
     hibernate:
-      ddl-auto: update
+      ddl-auto: create-drop
     properties:
       hibernate:
         dialect: org.hibernate.dialect.PostgreSQLDialect
@@ -17,5 +22,5 @@ spring:
 # App Properties
 storeum:
   app:
-    jwtSecret: ${STOREUM_JWT_SECRET}
-    jwtExpirationMs: ${STOREUM_JWT_EXPIRE_TIME}
+    jwtSecret: 1
+    jwtExpirationMs: 1

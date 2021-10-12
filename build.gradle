@@ -5,7 +5,6 @@ plugins {
 }
 
 group = 'com.avdienko'
-version = '1.0.0'
 sourceCompatibility = '11'
 
 configurations {
