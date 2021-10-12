@@ -84,9 +84,9 @@ public class AuthController {
         Role userRole = roleRepository.findByName(ERole.ROLE_USER)
                 .orElseThrow(() -> new RuntimeException("Error: Role is not found."));
 
-        user.setRoles(Collections.singleton(userRole));
+        user.setRoles(Collections.singletonList(userRole));
         userRepository.save(user);
 
-        return ResponseEntity.ok(new MessageResponse("User registered successfully!"));
+        return ResponseEntity.ok(new MessageResponse("User registered successfully."));
     }
 }
