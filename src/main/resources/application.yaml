@@ -1,0 +1,20 @@
+spring:
+  datasource:
+    url: jdbc:postgresql://localhost:5432/storeum_mvp
+    username: postgres
+    password: ${POSTGRES_PWD}
+  jpa:
+    hibernate:
+      ddl-auto: update
+    properties:
+      hibernate:
+        dialect: org.hibernate.dialect.PostgreSQLDialect
+        jdbc:
+          lob:
+            non_contextual_creation: true
+
+# App Properties
+storeum:
+  app:
+    jwtSecret: ${STOREUM_JWT_SECRET}
+    jwtExpirationMs: ${STOREUM_JWT_EXPIRE_TIME}
