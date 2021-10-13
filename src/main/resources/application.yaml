@@ -2,11 +2,11 @@ spring:
   sql:
     init:
       mode: always
+      platform: postgres
   datasource:
-    initialization-mode: always
-    url: jdbc:postgresql://postgres:5432/storeum_mvp
+    url: jdbc:postgresql://localhost:5432/storeum_mvp
     username: postgres
-    password: 2281488
+    password: postgres
   jpa:
     defer-datasource-initialization: true
     hibernate:
