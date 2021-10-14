@@ -1,10 +1,11 @@
+# DB props
 spring:
   sql:
     init:
       mode: always
       platform: postgres
   datasource:
-    url: jdbc:postgresql://localhost:5432/storeum_mvp
+    url: jdbc:postgresql://postgres:5432/storeum_dev
     username: postgres
     password: postgres
   jpa:
