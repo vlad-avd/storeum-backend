@@ -1,13 +1,12 @@
-# DB props
 spring:
   sql:
     init:
       mode: always
       platform: postgres
   datasource:
-    url: jdbc:postgresql://postgres:5432/storeum_dev
-    username: postgres
-    password: postgres
+    url: jdbc:postgresql://${DB_HOST}:${DB_PORT}/${DB_NAME}
+    username: ${POSTGRES_USERNAME}
+    password: ${POSTGRES_PWD}
   jpa:
     defer-datasource-initialization: true
     hibernate:
@@ -20,8 +19,18 @@ spring:
             non_contextual_creation: true
     show-sql: true
 
+#server:
+#  port: 8888
+
+
 # App Properties
 storeum:
   app:
-    jwtSecret: 1
-    jwtExpirationMs: 1
+    jwtSecret: ${STOREUM_JWT_SECRET}
+    jwtExpirationMs: ${STOREUM_JWT_EXPIRE_TIME}
+#debug: true
+#logging:
+#  level:
+#    org:
+#      springframework:
+#        context: DEBUG
