@@ -9,6 +9,7 @@ import com.avdienko.storeum.payload.response.JwtResponse;
 import com.avdienko.storeum.payload.response.MessageResponse;
 import com.avdienko.storeum.repository.RoleRepository;
 import com.avdienko.storeum.repository.UserRepository;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -27,6 +28,7 @@ import java.util.stream.Collectors;
 @CrossOrigin(origins = "*", maxAge = 3600)
 @RestController
 @RequestMapping("/api/auth")
+@Slf4j
 public class AuthController {
     @Autowired
     AuthenticationManager authenticationManager;
@@ -86,6 +88,8 @@ public class AuthController {
 
         user.setRoles(Collections.singletonList(userRole));
         userRepository.save(user);
+
+        log.info("User with id={} was created", user.getId());
 
         return ResponseEntity.ok(new MessageResponse("User registered successfully."));
     }

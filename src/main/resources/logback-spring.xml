@@ -1,0 +1,30 @@
+<configuration>
+
+    <!--    store properties to app.yml-->
+    <property name="appName" value="backend-service"/>
+
+    <appender name="Console" class="ch.qos.logback.core.ConsoleAppender">
+        <encoder>
+            <pattern>%d{HH:mm:ss.SSS} %-5level %logger{36} - %msg%n</pattern>
+        </encoder>
+    </appender>
+
+    <appender name="File" class="ch.qos.logback.core.FileAppender">
+        <file>/logs/app.log</file>
+        <append>true</append>
+        <immediateFlush>true</immediateFlush>
+        <encoder>
+            <pattern>%d{HH:mm:ss.SSS} [%thread] %-5level %logger{36} - %msg%n</pattern>
+        </encoder>
+    </appender>
+
+    <logger name="org.springframework" level="ERROR"/>
+    <logger name="com.avdienko" level="INFO">
+        <appender-ref ref="Console"/>
+        <!--        <appender-ref ref="File"/>-->
+    </logger>
+
+    <!--    <root level="INFO">-->
+    <!--        <appender-ref ref="file" />-->
+    <!--    </root>-->
+</configuration>
