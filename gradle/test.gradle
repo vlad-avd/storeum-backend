@@ -31,3 +31,15 @@ tasks.withType(Test) {
 
 check.dependsOn integrationTest
 integrationTest.mustRunAfter test
+
+dependencies {
+    integrationTestImplementation group: 'io.zonky.test', name: 'embedded-database-spring-test', version: '2.1.1'
+    integrationTestImplementation('org.springframework.boot:spring-boot-starter-test') {
+        exclude group: 'org.junit.vintage', module: 'junit-vintage-engine'
+    }
+
+    testImplementation("org.springframework.boot:spring-boot-starter-test") {
+        exclude group: "org.junit.vintage", module: "junit-vintage-engine"
+    }
+    testImplementation "org.projectlombok:lombok:1.18.20"
+}

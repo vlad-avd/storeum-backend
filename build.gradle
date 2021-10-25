@@ -38,7 +38,3 @@ dependencies {
 
     developmentOnly 'org.springframework.boot:spring-boot-devtools:2.5.3'
 }
-
-test {
-    useJUnitPlatform()
-}

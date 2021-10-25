@@ -2,13 +2,14 @@ package com.avdienko.storeum.controller;
 
 import com.avdienko.storeum.auth.UserDetailsImpl;
 import com.avdienko.storeum.auth.jwt.JwtUtils;
+import com.avdienko.storeum.exception.TokenRefreshException;
 import com.avdienko.storeum.model.*;
-import com.avdienko.storeum.payload.request.LoginRequest;
-import com.avdienko.storeum.payload.request.RegisterRequest;
-import com.avdienko.storeum.payload.response.JwtResponse;
-import com.avdienko.storeum.payload.response.MessageResponse;
+import com.avdienko.storeum.payload.request.*;
+import com.avdienko.storeum.payload.response.*;
 import com.avdienko.storeum.repository.RoleRepository;
 import com.avdienko.storeum.repository.UserRepository;
+import com.avdienko.storeum.service.RefreshTokenService;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.jboss.logging.MDC;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -30,21 +31,14 @@ import java.util.stream.Collectors;
 @RestController
 @RequestMapping("/api/auth")
 @Slf4j
+@RequiredArgsConstructor
 public class AuthController {
-    @Autowired
-    AuthenticationManager authenticationManager;
-
-    @Autowired
-    UserRepository userRepository;
-
-    @Autowired
-    RoleRepository roleRepository;
-
-    @Autowired
-    PasswordEncoder encoder;
-
-    @Autowired
-    JwtUtils jwtUtils;
+    private final AuthenticationManager authenticationManager;
+    private final UserRepository userRepository;
+    private final RoleRepository roleRepository;
+    private final PasswordEncoder encoder;
+    private final JwtUtils jwtUtils;
+    private final RefreshTokenService refreshTokenService;
 
     @PostMapping("/login")
     public ResponseEntity<?> authenticateUser(@Valid @RequestBody LoginRequest loginRequest) {
@@ -53,14 +47,13 @@ public class AuthController {
                 new UsernamePasswordAuthenticationToken(loginRequest.getUsername(), loginRequest.getPassword()));
 
         SecurityContextHolder.getContext().setAuthentication(authentication);
-        String jwt = jwtUtils.generateJwtToken(authentication);
-
         UserDetailsImpl userDetails = (UserDetailsImpl) authentication.getPrincipal();
-        List<String> roles = userDetails.getAuthorities().stream()
-                .map(GrantedAuthority::getAuthority)
-                .collect(Collectors.toList());
+        String jwt = jwtUtils.generateJwtToken(userDetails);
+
+        RefreshToken refreshToken = refreshTokenService.createRefreshToken(userDetails.getId());
 
         return ResponseEntity.ok(new JwtResponse(jwt,
+                refreshToken.getToken(),
                 userDetails.getId(),
                 userDetails.getUsername(),
                 userDetails.getEmail()));
@@ -95,5 +88,26 @@ public class AuthController {
         log.info("User with id={} was created", user.getId());
 
         return ResponseEntity.ok(new MessageResponse("User registered successfully."));
+    }
+
+    @PostMapping("/refresh-token")
+    public ResponseEntity<?> refreshToken(@Valid @RequestBody RefreshTokenRequest request) {
+        String requestRefreshToken = request.getRefreshToken();
+
+        return refreshTokenService.findByToken(requestRefreshToken)
+                .map(refreshTokenService::verifyExpiration)
+                .map(RefreshToken::getUser)
+                .map(user -> {
+                    String token = jwtUtils.generateTokenFromUsername(user.getUsername());
+                    return ResponseEntity.ok(new RefreshTokenResponse(token, requestRefreshToken));
+                })
+                .orElseThrow(() -> new TokenRefreshException(requestRefreshToken,
+                        "Refresh token is not in database!"));
+    }
+
+    @PostMapping("/logout")
+    public ResponseEntity<?> logoutUser(@Valid @RequestBody LogOutRequest logOutRequest) {
+        refreshTokenService.deleteByUserId(logOutRequest.getUserId());
+        return ResponseEntity.ok(new MessageResponse("Log out successful!"));
     }
 }

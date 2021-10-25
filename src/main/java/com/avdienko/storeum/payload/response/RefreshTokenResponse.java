@@ -5,10 +5,7 @@ import lombok.*;
 @Getter
 @Setter
 @AllArgsConstructor
-public class JwtResponse {
-    private String token;
+public class RefreshTokenResponse {
+    private String accessToken;
     private String refreshToken;
-    private Long id;
-    private String username;
-    private String email;
 }

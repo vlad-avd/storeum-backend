@@ -28,6 +28,7 @@ storeum:
   app:
     jwtSecret: ${STOREUM_JWT_SECRET}
     jwtExpirationMs: ${STOREUM_JWT_EXPIRE_TIME}
+    jwtRefreshExpirationMs: ${STOREUM_JWT_REFRESH_EXPIRE_TIME}
 #debug: true
 #logging:
 #  level:
