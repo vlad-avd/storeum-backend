@@ -52,11 +52,16 @@ public class AuthController {
 
         RefreshToken refreshToken = refreshTokenService.createRefreshToken(userDetails.getId());
 
+        List<String> roles = userDetails.getAuthorities().stream()
+                .map(GrantedAuthority::getAuthority)
+                .collect(Collectors.toList());
+
         return ResponseEntity.ok(new JwtResponse(jwt,
                 refreshToken.getToken(),
                 userDetails.getId(),
                 userDetails.getUsername(),
-                userDetails.getEmail()));
+                userDetails.getEmail(),
+                roles));
     }
 
     @PostMapping("/register")
