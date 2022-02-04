@@ -1,5 +1,7 @@
 package com.avdienko.storeum.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonIncludeProperties;
 import lombok.*;
 
 import javax.persistence.*;
@@ -25,8 +27,10 @@ public class Record {
     private String link;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    private Board board;
-
-    @ManyToOne(fetch = FetchType.LAZY)
+    @JsonIncludeProperties({"id"})
     private Folder folder;
+
+    @ManyToOne
+    @JsonIgnore
+    private User user;
 }

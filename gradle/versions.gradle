@@ -1,0 +1,8 @@
+ext {
+    postgresVersion = '42.2.23.jre7'
+
+    junitVersion = '5.7.2'
+    springSecurityTestVersion = '5.5.1'
+    embeddedDbSpringVersion = '2.1.1'
+    lombokVersion = '1.18.20'
+}

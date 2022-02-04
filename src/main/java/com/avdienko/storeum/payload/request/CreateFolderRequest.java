@@ -8,6 +8,5 @@ import javax.validation.constraints.*;
 public class CreateFolderRequest {
     @NotBlank
     private String title;
-    @NotNull
-    private Long userId;
+    private Long parentFolderId;
 }

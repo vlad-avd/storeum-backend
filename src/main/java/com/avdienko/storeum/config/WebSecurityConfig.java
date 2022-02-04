@@ -20,9 +20,12 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 import org.springframework.web.servlet.config.annotation.CorsRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 
+import static com.avdienko.storeum.util.Constants.BASE_URL;
+
 @Configuration
 @EnableWebSecurity
 @RequiredArgsConstructor
+//TODO: cleanup or uncomment below annotation params
 @EnableGlobalMethodSecurity(
         // securedEnabled = true,
         // jsr250Enabled = true,
@@ -39,7 +42,9 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter implements W
 
     @Override
     public void configure(AuthenticationManagerBuilder authenticationManagerBuilder) throws Exception {
-        authenticationManagerBuilder.userDetailsService(userDetailsService).passwordEncoder(passwordEncoder());
+        authenticationManagerBuilder
+                .userDetailsService(userDetailsService)
+                .passwordEncoder(passwordEncoder());
     }
 
     @Bean
@@ -58,13 +63,17 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter implements W
         http.cors().and().csrf().disable()
                 .exceptionHandling().authenticationEntryPoint(unauthorizedHandler).and()
                 .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS).and()
-                .authorizeRequests().antMatchers("/api/auth/**").permitAll()
-                .antMatchers("/api/test/**").permitAll()
+                .authorizeRequests().antMatchers(new String[]{
+                        BASE_URL + "/auth/login",
+                        BASE_URL + "/auth/register",
+                        BASE_URL + "/auth/refresh-token",
+                }).permitAll()
                 .anyRequest().authenticated();
 
         http.addFilterBefore(authenticationJwtTokenFilter(), UsernamePasswordAuthenticationFilter.class);
     }
 
+    //TODO: cors
     @Override
     public void addCorsMappings(CorsRegistry registry) {
         registry.addMapping("/**")

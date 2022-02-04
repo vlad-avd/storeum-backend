@@ -6,45 +6,65 @@ import com.avdienko.storeum.payload.request.CreateFolderRequest;
 import com.avdienko.storeum.payload.response.MessageResponse;
 import com.avdienko.storeum.repository.FolderRepository;
 import com.avdienko.storeum.repository.UserRepository;
-import com.fasterxml.jackson.annotation.JsonProperty;
+import com.avdienko.storeum.util.HttpUtil;
+import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
 import java.util.List;
+import java.util.Optional;
+
+import static com.avdienko.storeum.util.Constants.BASE_URL;
 
 @CrossOrigin(origins = "*", maxAge = 3600)
 @RestController
-@RequestMapping("/api/folders")
+@RequestMapping(BASE_URL)
+@RequiredArgsConstructor
 public class FolderController {
-    @Autowired
-    FolderRepository folderRepository;
-    @Autowired
-    UserRepository userRepository;
 
-    @PostMapping("/create")
-    public ResponseEntity<MessageResponse> createFolder(@Valid @RequestBody CreateFolderRequest createFolderRequest ) {
-        User user = userRepository.findById(createFolderRequest.getUserId()).get();
-        Folder folder = folderRepository.findById(5L).get();
-        folder.setParentFolder(folderRepository.findById(3L).get());
+    private FolderRepository folderRepository;
+    private UserRepository userRepository;
+
+    @PostMapping("/users/{userId}/folders")
+    public ResponseEntity<?> createFolder(@Valid @RequestBody CreateFolderRequest request,
+                                          @PathVariable Long userId) {
+        Folder folder = new Folder();
+        if (request.getParentFolderId() != null) {
+            Optional<Folder> parentFolder = folderRepository.findById(request.getParentFolderId());
+            parentFolder.ifPresent(folder::setParentFolder);
+        }
+
+        Optional<User> user = userRepository.findById(userId);
+        user.ifPresent(folder::setUser);
+
+        folder.setTitle(request.getTitle());
         folderRepository.save(folder);
-        folder.getSubFolders().add(folder);
-        folderRepository.save(folder);
-        return ResponseEntity.ok(new MessageResponse("Folder was created successfully."));
+        return ResponseEntity.ok(folder);
     }
 
-    @GetMapping("/fcuk")
-    public List<Folder> get(@RequestParam String userId) {
-        List<Folder> folders = userRepository.findById(Long.valueOf(userId)).get().getFolders();
-//        folders.forEach(System.out::println);
-        return folders;
+    @GetMapping("/users/{userId}/folders")
+    public List<Folder> getUserFolders(@PathVariable Long userId) {
+        return folderRepository.findByUserIdAndParentFolderIsNull(userId);
     }
 
-    @GetMapping("/{id}")
-    public Folder getFolder(@PathVariable Long id) {
-        Folder folders = folderRepository.findById(id).get();
-//        folders.forEach(System.out::println);
-        return folders;
+    @GetMapping("/users/{userId}/folders/{folderId}")
+    public ResponseEntity<?> getFolder(@PathVariable Long folderId) {
+        Optional<Folder> folder = folderRepository.findById(folderId);
+        String notFoundBody = "Folder was not found, id=" + folderId;
+        return HttpUtil.okOrNotFound(folder, notFoundBody);
+    }
+
+    @PutMapping("/users/{userId}/folders/{folderId}")
+    public Folder editFolder(@PathVariable Long userId, @PathVariable Long folderId) {
+        return new Folder();
+    }
+
+    @DeleteMapping("/users/{userId}/folders/{folderId}")
+    public ResponseEntity<String> deleteFolder(@PathVariable Long userId, @PathVariable Long folderId) {
+        folderRepository.deleteById(folderId);
+        return ResponseEntity.ok("Folder successfully deleted, id=" + folderId);
     }
 }

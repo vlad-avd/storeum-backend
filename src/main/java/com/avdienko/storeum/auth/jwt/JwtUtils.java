@@ -4,7 +4,6 @@ import com.avdienko.storeum.auth.UserDetailsImpl;
 import io.jsonwebtoken.*;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Component;
 
 import java.util.Date;
@@ -13,13 +12,13 @@ import java.util.Date;
 @Slf4j
 public class JwtUtils {
 
-    @Value("${storeum.app.jwtSecret}")
+    @Value("${storeum.app.jwt-secret}")
     private String jwtSecret;
 
-    @Value("${storeum.app.jwtExpirationMs}")
+    @Value("${storeum.app.jwt-expiration-ms}")
     private int jwtExpirationMs;
 
-    public String generateJwtToken(UserDetailsImpl userPrincipal) {
+    public String generateJwt(UserDetailsImpl userPrincipal) {
         return generateTokenFromUsername(userPrincipal.getUsername());
     }
 
@@ -32,7 +31,7 @@ public class JwtUtils {
                 .compact();
     }
 
-    public String getUserNameFromJwtToken(String token) {
+    public String getUsernameFromJwt(String token) {
         return Jwts.parser()
                 .setSigningKey(jwtSecret)
                 .parseClaimsJws(token)
@@ -40,7 +39,7 @@ public class JwtUtils {
                 .getSubject();
     }
 
-    public boolean validateJwtToken(String authToken) {
+    public boolean validateJwt(String authToken) {
         try {
             Jwts.parser().setSigningKey(jwtSecret).parseClaimsJws(authToken);
             return true;

@@ -14,7 +14,6 @@ import java.util.List;
 @Getter
 @Setter
 @NoArgsConstructor
-@JsonIdentityInfo(generator = ObjectIdGenerators.PropertyGenerator.class, property = "id", scope = Folder.class, resolver = DedupingObjectIdResolver.class)
 @ToString
 public class Folder {
     @Id
@@ -25,31 +24,14 @@ public class Folder {
     @Size(max = 30)
     private String title;
 
+    @ManyToOne
+    @JsonIncludeProperties({"id"})
+    private Folder parentFolder;
+
     @OneToMany(mappedBy = "parentFolder", cascade = CascadeType.ALL, orphanRemoval = true)
-//    @ToString.Exclude
-//    @JsonBackReference
     private List<Folder> subFolders = new ArrayList<>();
 
     @ManyToOne
-//    @JsonManagedReference
-//    @JsonIgnore
-    private Folder parentFolder;
-
-    @OneToMany(mappedBy = "folder", cascade = CascadeType.ALL, orphanRemoval = true)
-//    @ToString.Exclude
-    private List<Board> boards = new ArrayList<>();
-
-    @OneToMany(mappedBy = "folder", cascade = CascadeType.ALL, orphanRemoval = true)
-//    @ToString.Exclude
-    private List<Record> records = new ArrayList<>();
-
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JsonBackReference
-    @ToString.Exclude
+    @JsonIgnore
     private User user;
-
-    public Folder(String title, User user) {
-        this.title = title;
-        this.user = user;
-    }
 }
