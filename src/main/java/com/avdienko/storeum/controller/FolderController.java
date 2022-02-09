@@ -25,8 +25,8 @@ import static com.avdienko.storeum.util.Constants.BASE_URL;
 @RequiredArgsConstructor
 public class FolderController {
 
-    private FolderRepository folderRepository;
-    private UserRepository userRepository;
+    private final FolderRepository folderRepository;
+    private final UserRepository userRepository;
 
     @PostMapping("/users/{userId}/folders")
     public ResponseEntity<?> createFolder(@Valid @RequestBody CreateFolderRequest request,

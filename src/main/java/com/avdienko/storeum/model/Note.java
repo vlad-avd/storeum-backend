@@ -9,11 +9,11 @@ import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.Size;
 
 @Entity
-@Table(name = "record")
+@Table(name = "note")
 @Getter
 @Setter
 @NoArgsConstructor
-public class Record {
+public class Note {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;

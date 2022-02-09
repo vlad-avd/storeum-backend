@@ -16,8 +16,37 @@ INSERT INTO folder(title, user_id, parent_folder_id)
 VALUES
     ('Development', 1, null),
     ('English', 1, null),
+    ('Leisure', 1, null),
     ('Books', 1, 1),
     ('Courses', 1, 1),
     ('Articles', 1, 2),
     ('Java', 1, 3),
     ('Python', 1, 3);
+
+INSERT INTO note(title, description, link, folder_id, user_id)
+VALUES
+    ('BOTW map', '', 'https://zeldamaps.com/?game=BotW', 3, 1),
+    ('Мы обречены', NULL, 'https://www.youtube.com/channel/UCUSbYJK87rpBUJ5KGQd7oHA', 3, 1),
+    ('projects', 'Storeum', NULL, 3, 1),
+    ('Ravesli', 'linux', 'https://ravesli.com/uroki-po-linux/', 3, 1),
+    ('Game making', 'Godot, libgdx', NULL, 3, 1),
+    ('habr', NULL, 'https://habr.com/ru/', 3, 1),
+    ('Lorem', 'Ipsum', NULL, 3, 1),
+    ('Lorem', 'Ipsum', NULL, 3, 1),
+    ('Lorem', 'Ipsum', NULL, 3, 1),
+    ('Lorem', 'Ipsum', NULL, 3, 1),
+    ('Lorem', 'Ipsum', NULL, 3, 1),
+    ('Lorem', 'Ipsum', NULL, 3, 1),
+    ('Lorem', 'Ipsum', NULL, 3, 1),
+    ('Lorem', 'Ipsum', NULL, 3, 1),
+    ('Lorem', 'Ipsum', NULL, 3, 1),
+    ('Lorem', 'Ipsum', NULL, 3, 1),
+    ('Lorem', 'Ipsum', NULL, 3, 1),
+    ('Lorem', 'Ipsum', NULL, 3, 1),
+    ('Lorem', 'Ipsum', NULL, 3, 1),
+    ('Lorem', 'Ipsum', NULL, 3, 1),
+    ('Lorem', 'Ipsum', NULL, 3, 1),
+    ('Lorem', 'Ipsum', NULL, 3, 1),
+    ('Lorem', 'Ipsum', NULL, 3, 1),
+    ('Lorem', 'Ipsum', NULL, 3, 1),
+    ('Lorem', 'Ipsum', NULL, 3, 1);
