@@ -1,15 +1,12 @@
 package com.avdienko.storeum.controller;
 
-import com.avdienko.storeum.model.Folder;
-import com.avdienko.storeum.model.User;
+import com.avdienko.storeum.model.entity.Folder;
+import com.avdienko.storeum.model.entity.User;
 import com.avdienko.storeum.payload.request.CreateFolderRequest;
-import com.avdienko.storeum.payload.response.MessageResponse;
 import com.avdienko.storeum.repository.FolderRepository;
 import com.avdienko.storeum.repository.UserRepository;
 import com.avdienko.storeum.util.HttpUtil;
 import lombok.RequiredArgsConstructor;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 

@@ -1,6 +1,6 @@
 package com.avdienko.storeum.repository;
 
-import com.avdienko.storeum.model.RefreshToken;
+import com.avdienko.storeum.model.entity.RefreshToken;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 

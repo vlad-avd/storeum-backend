@@ -3,7 +3,7 @@ package com.avdienko.storeum.controller;
 import com.avdienko.storeum.auth.UserDetailsImpl;
 import com.avdienko.storeum.auth.jwt.JwtUtils;
 import com.avdienko.storeum.exception.TokenRefreshException;
-import com.avdienko.storeum.model.*;
+import com.avdienko.storeum.model.entity.*;
 import com.avdienko.storeum.payload.request.*;
 import com.avdienko.storeum.payload.response.*;
 import com.avdienko.storeum.repository.RoleRepository;

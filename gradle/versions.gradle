@@ -5,4 +5,5 @@ ext {
     springSecurityTestVersion = '5.5.1'
     embeddedDbSpringVersion = '2.1.1'
     lombokVersion = '1.18.20'
+
 }

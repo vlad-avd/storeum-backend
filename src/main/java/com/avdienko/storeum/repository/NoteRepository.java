@@ -1,6 +1,6 @@
 package com.avdienko.storeum.repository;
 
-import com.avdienko.storeum.model.Note;
+import com.avdienko.storeum.model.entity.Note;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 import java.util.List;

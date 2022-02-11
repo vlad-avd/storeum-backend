@@ -1,7 +1,7 @@
 package com.avdienko.storeum.repository;
 
-import com.avdienko.storeum.model.ERole;
-import com.avdienko.storeum.model.Role;
+import com.avdienko.storeum.model.entity.ERole;
+import com.avdienko.storeum.model.entity.Role;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 

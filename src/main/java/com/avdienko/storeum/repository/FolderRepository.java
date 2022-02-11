@@ -1,6 +1,6 @@
 package com.avdienko.storeum.repository;
 
-import com.avdienko.storeum.model.Folder;
+import com.avdienko.storeum.model.entity.Folder;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 

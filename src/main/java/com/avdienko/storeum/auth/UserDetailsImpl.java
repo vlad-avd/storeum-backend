@@ -1,6 +1,6 @@
 package com.avdienko.storeum.auth;
 
-import com.avdienko.storeum.model.User;
+import com.avdienko.storeum.model.entity.User;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.*;
 import org.springframework.security.core.GrantedAuthority;

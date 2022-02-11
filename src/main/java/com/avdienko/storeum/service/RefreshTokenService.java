@@ -1,8 +1,8 @@
 package com.avdienko.storeum.service;
 
 import com.avdienko.storeum.exception.TokenRefreshException;
-import com.avdienko.storeum.model.RefreshToken;
-import com.avdienko.storeum.model.User;
+import com.avdienko.storeum.model.entity.RefreshToken;
+import com.avdienko.storeum.model.entity.User;
 import com.avdienko.storeum.repository.RefreshTokenRepository;
 import com.avdienko.storeum.repository.UserRepository;
 import lombok.RequiredArgsConstructor;

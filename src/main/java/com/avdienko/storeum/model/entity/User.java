@@ -1,4 +1,4 @@
-package com.avdienko.storeum.model;
+package com.avdienko.storeum.model.entity;
 
 import lombok.*;
 
