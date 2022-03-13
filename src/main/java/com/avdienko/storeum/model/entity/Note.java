@@ -7,6 +7,7 @@ import lombok.*;
 import javax.persistence.*;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.Size;
+import java.time.LocalDateTime;
 
 @Entity
 @Table(name = "note")
@@ -15,7 +16,8 @@ import javax.validation.constraints.Size;
 @NoArgsConstructor
 public class Note {
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @SequenceGenerator(name = "n_seq", sequenceName = "note_sequence", allocationSize = 10)
+    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator="n_seq")
     private Long id;
 
     @NotBlank
@@ -33,4 +35,8 @@ public class Note {
     @ManyToOne
     @JsonIgnore
     private User user;
+
+    private LocalDateTime createdAt;
+
+    private LocalDateTime updatedAt;
 }
