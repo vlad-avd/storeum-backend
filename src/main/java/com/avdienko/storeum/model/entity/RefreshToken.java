@@ -1,13 +1,14 @@
 package com.avdienko.storeum.model.entity;
 
-import lombok.Getter;
-import lombok.Setter;
+import lombok.*;
 
 import javax.persistence.*;
 import java.time.Instant;
 
 @Getter
-@Setter
+@Builder
+@AllArgsConstructor
+@NoArgsConstructor
 @Entity(name = "refresh_token")
 public class RefreshToken {
     @Id

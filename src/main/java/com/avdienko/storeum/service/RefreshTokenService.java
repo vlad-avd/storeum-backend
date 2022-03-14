@@ -1,5 +1,6 @@
 package com.avdienko.storeum.service;
 
+import com.avdienko.storeum.exception.ResourceNotFoundException;
 import com.avdienko.storeum.exception.TokenRefreshException;
 import com.avdienko.storeum.model.entity.RefreshToken;
 import com.avdienko.storeum.model.entity.User;
@@ -8,15 +9,17 @@ import com.avdienko.storeum.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 
 import java.time.Instant;
 import java.util.Optional;
 import java.util.UUID;
 
+import static com.avdienko.storeum.util.MessageFormatters.userNotFound;
+
 @Service
 @RequiredArgsConstructor
 public class RefreshTokenService {
+
     private final RefreshTokenRepository refreshTokenRepository;
     private final UserRepository userRepository;
 
@@ -28,13 +31,14 @@ public class RefreshTokenService {
     }
 
     public RefreshToken createRefreshToken(Long userId) {
-        Optional<User> user = userRepository.findById(userId);
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new ResourceNotFoundException(userNotFound(userId)));
 
-        RefreshToken refreshToken = new RefreshToken();
-        //TODO: create custom exception
-        user.ifPresentOrElse(refreshToken::setUser, () -> {throw new RuntimeException();});
-        refreshToken.setExpiryDate(Instant.now().plusMillis(refreshTokenDurationMs));
-        refreshToken.setToken(UUID.randomUUID().toString());
+        RefreshToken refreshToken = RefreshToken.builder()
+                .user(user)
+                .expiryDate(Instant.now().plusMillis(refreshTokenDurationMs))
+                .token(UUID.randomUUID().toString())
+                .build();
 
         return refreshTokenRepository.save(refreshToken);
     }
@@ -42,17 +46,16 @@ public class RefreshTokenService {
     public RefreshToken verifyExpiration(RefreshToken token) {
         if (token.getExpiryDate().compareTo(Instant.now()) < 0) {
             refreshTokenRepository.delete(token);
-            throw new TokenRefreshException(token.getToken(), "Refresh token was expired. Please make a new sign in request");
+            String errorMessage = "Refresh token was expired. Please make a new sign in request";
+            throw new TokenRefreshException(token.getToken(), errorMessage);
         }
 
         return token;
     }
 
-    @Transactional
     public void deleteByUserId(Long userId) {
-//        Optional<User> user = userRepository.findById(userId);
-        refreshTokenRepository.deleteByUserId(userId);
-        //TODO: create custom exception
-//        user.ifPresentOrElse(refreshTokenRepository::deleteByUser, () -> {throw new RuntimeException();});
+        String errorMessage = String.format("There is no refresh token in DB associated with userId=%s", userId);
+        refreshTokenRepository.deleteByUserId(userId)
+                .orElseThrow(() -> new ResourceNotFoundException(errorMessage));
     }
 }

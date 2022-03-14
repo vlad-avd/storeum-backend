@@ -13,7 +13,9 @@ import java.time.LocalDateTime;
 @Table(name = "note")
 @Getter
 @Setter
+@Builder
 @NoArgsConstructor
+@AllArgsConstructor
 public class Note {
     @Id
     @SequenceGenerator(name = "n_seq", sequenceName = "note_sequence", allocationSize = 10)

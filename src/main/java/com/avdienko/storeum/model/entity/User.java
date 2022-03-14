@@ -1,5 +1,6 @@
 package com.avdienko.storeum.model.entity;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.*;
 
 import javax.persistence.*;
@@ -14,7 +15,9 @@ import java.util.List;
         })
 @Getter
 @Setter
+@Builder
 @NoArgsConstructor
+@AllArgsConstructor
 public class User {
     @Id
     @SequenceGenerator(name = "u_seq", sequenceName = "user_sequence", allocationSize = 10)
@@ -41,6 +44,7 @@ public class User {
     private List<Role> roles = new ArrayList<>();
 
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
+    @JsonIgnore
     private List<Folder> folders = new ArrayList<>();
 
     public User(String username, String email, String password) {

@@ -1,18 +1,16 @@
 package com.avdienko.storeum.controller;
 
-import com.avdienko.storeum.model.ValidationResult;
-import com.avdienko.storeum.model.entity.*;
+import com.avdienko.storeum.model.entity.Note;
 import com.avdienko.storeum.payload.request.CreateNoteRequest;
-import com.avdienko.storeum.repository.*;
-import com.avdienko.storeum.validator.NoteValidator;
+import com.avdienko.storeum.payload.request.EditNoteRequest;
+import com.avdienko.storeum.payload.response.GenericResponse;
+import com.avdienko.storeum.service.NoteService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
-import java.util.Optional;
 
-import static com.avdienko.storeum.model.ValidationStatus.SUCCESS;
 import static com.avdienko.storeum.util.Constants.BASE_URL;
 
 @CrossOrigin(origins = "*", maxAge = 3600)
@@ -21,38 +19,31 @@ import static com.avdienko.storeum.util.Constants.BASE_URL;
 @RequiredArgsConstructor
 public class NoteController {
 
-    private final NoteRepository noteRepository;
-    private final UserRepository userRepository;
-    private final FolderRepository folderRepository;
-    private final NoteValidator noteValidator;
+    private final NoteService noteService;
 
     @GetMapping("/users/{userId}/folders/{folderId}/notes")
     public List<Note> getFolderNotes(@PathVariable Long folderId) {
-        return noteRepository.findNotesByFolderId(folderId);
+        return noteService.getFolderNotes(folderId);
     }
 
     @PostMapping("/users/{userId}/folders/{folderId}/notes")
-    public ResponseEntity<?> createNote(@RequestBody CreateNoteRequest request,
-                                        @PathVariable Long userId,
-                                        @PathVariable Long folderId) {
-        ValidationResult validationResult = noteValidator.validateCreateRequest(request);
-        if (SUCCESS == validationResult.getValidationStatus()) {
+    public ResponseEntity<String> createNote(@RequestBody CreateNoteRequest request,
+                                             @PathVariable Long userId,
+                                             @PathVariable Long folderId) {
+        GenericResponse<Note> response = noteService.createNote(request, userId, folderId);
+        return ResponseEntity
+                .status(response.getStatusCode())
+                .body(response.getResponseBody());
+    }
 
-            Note note = new Note();
+    @PostMapping("/users/{userId}/folders/{folderId}/notes/{noteId}")
+    public ResponseEntity<Note> editNote(@RequestBody EditNoteRequest request,
+                                         @PathVariable Long noteId) {
+        return ResponseEntity.ok(noteService.editNote(request, noteId));
+    }
 
-            Optional<User> user = userRepository.findById(userId);
-            user.ifPresentOrElse(note::setUser, () -> {throw new RuntimeException("User not found");});
-
-            Optional<Folder> folder = folderRepository.findById(folderId);
-            folder.ifPresentOrElse(note::setFolder, () -> {throw new RuntimeException("Folder not found");});
-
-            note.setTitle(request.getTitle());
-            note.setDescription(request.getDescription());
-            note.setLink(request.getLink());
-
-            return ResponseEntity.ok(noteRepository.save(note));
-        } else {
-            return ResponseEntity.badRequest().body(validationResult.getErrorMessage());
-        }
+    @DeleteMapping("/users/{userId}/folders/{folderId}/notes/{noteId}")
+    public ResponseEntity<String> deleteNote(@PathVariable Long noteId) {
+        return ResponseEntity.ok(noteService.deleteNote(noteId));
     }
 }
