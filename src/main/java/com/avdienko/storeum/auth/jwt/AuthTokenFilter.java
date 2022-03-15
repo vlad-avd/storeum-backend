@@ -31,7 +31,7 @@ public class AuthTokenFilter extends OncePerRequestFilter {
             Optional<String> jwt = parseJwt(request);
             jwt.ifPresent(token -> setupAuthentication(token, request));
         } catch (Exception e) {
-            logger.error("Cannot set user authentication: {}", e);
+            log.error("Cannot set user authentication, ex={}", e.getMessage());
         }
 
         filterChain.doFilter(request, response);

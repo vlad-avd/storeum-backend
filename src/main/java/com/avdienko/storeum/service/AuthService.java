@@ -20,7 +20,7 @@ import com.avdienko.storeum.repository.UserRepository;
 import com.avdienko.storeum.validator.UserValidator;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.http.HttpStatus;
+import org.slf4j.MDC;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
@@ -50,10 +50,14 @@ public class AuthService {
     private final UserValidator validator;
 
     public JwtResponse auth(LoginRequest request) {
+        log.info("Login request received for user with username={}", request.getUsername());
+
         Authentication authentication = authenticationManager.authenticate(
                 new UsernamePasswordAuthenticationToken(request.getUsername(), request.getPassword()));
         SecurityContextHolder.getContext().setAuthentication(authentication);
         UserDetailsImpl userDetails = (UserDetailsImpl) authentication.getPrincipal();
+
+        MDC.put("userId", String.valueOf(userDetails.getId()));
 
         List<String> roles = userDetails.getAuthorities().stream()
                 .map(GrantedAuthority::getAuthority)
@@ -61,6 +65,7 @@ public class AuthService {
 
         String jwt = jwtUtils.generateJwt(userDetails);
         RefreshToken refreshToken = refreshTokenService.createRefreshToken(userDetails.getId());
+        log.info("Logged in successfully");
 
         return JwtResponse.builder()
                 .accessToken(jwt)
@@ -73,12 +78,12 @@ public class AuthService {
     }
 
     public GenericResponse<User> register(RegisterRequest request) {
+        log.info("Register request received for user with username={}", request.getUsername());
+
         ValidationResult validationResult = validator.validateRegisterRequest(request);
         if (FAIL == validationResult.getValidationStatus()) {
-            return GenericResponse.<User>builder()
-                    .errorMessage(validationResult.getErrorMessage())
-                    .statusCode(HttpStatus.BAD_REQUEST)
-                    .build();
+            log.info("User register request validation failed, cause={}", validationResult.getErrorMessage());
+            return new GenericResponse<>(validationResult.getErrorMessage());
         }
 
         String errorMessage = String.format("Role with value=%s was not found in DB", ROLE_USER);
@@ -95,29 +100,31 @@ public class AuthService {
                 .build();
 
         userRepository.save(user);
-        log.info("User with id={} was created", user.getId());
 
-        return GenericResponse.<User>builder()
-                .body(user)
-                .statusCode(HttpStatus.OK)
-                .build();
+        MDC.put("userId", String.valueOf(user.getId()));
+        log.info("User was created, user={} ", user);
+
+        return new GenericResponse<>(user);
     }
 
     public RefreshTokenResponse refreshToken(RefreshTokenRequest request) {
         String requestRefreshToken = request.getRefreshToken();
+        log.info("Refresh token request received for token={}", requestRefreshToken);
 
         return refreshTokenService.findByToken(requestRefreshToken)
                 .map(refreshTokenService::verifyExpiration)
                 .map(RefreshToken::getUser)
                 .map(user -> {
                     String token = jwtUtils.generateTokenFromUsername(user.getUsername());
+                    log.info("Token was refreshed successfully");
                     return new RefreshTokenResponse(token, requestRefreshToken);
                 })
                 .orElseThrow(() -> new TokenRefreshException(requestRefreshToken, "Refresh token is not in database"));
     }
 
-    public String logout(LogoutRequest logoutRequest) {
-        refreshTokenService.deleteByUserId(logoutRequest.getUserId());
+    public String logout(LogoutRequest request) {
+        refreshTokenService.deleteByUserId(request.getUserId());
+        log.info("Logged out successfully");
         return "Log out successful";
     }
 }

@@ -19,7 +19,9 @@ public class JwtUtils {
     private int jwtExpirationMs;
 
     public String generateJwt(UserDetailsImpl userPrincipal) {
-        return generateTokenFromUsername(userPrincipal.getUsername());
+        String jwt = generateTokenFromUsername(userPrincipal.getUsername());
+        log.info("Access token was generated");
+        return jwt;
     }
 
     public String generateTokenFromUsername(String username) {

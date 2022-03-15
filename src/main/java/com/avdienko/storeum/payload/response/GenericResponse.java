@@ -1,24 +1,31 @@
 package com.avdienko.storeum.payload.response;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
-import lombok.Builder;
 import lombok.Getter;
-import lombok.SneakyThrows;
-import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 
 @Getter
-@Builder
 public class GenericResponse<T> {
 
     private T body;
     private String errorMessage;
-    private HttpStatus statusCode;
 
-    @SneakyThrows
-    public String getResponseBody() {
-        ObjectMapper mapper = new ObjectMapper();
-        return body == null
-                ? errorMessage
-                : mapper.writeValueAsString(body);
+    public GenericResponse(T body) {
+        this.body = body;
+    }
+
+    public GenericResponse(String errorMessage) {
+        this.errorMessage = errorMessage;
+    }
+
+    public ResponseEntity<?> resolveResponse() {
+        if (isBadRequest()) {
+            return ResponseEntity.badRequest().body(getErrorMessage());
+        } else {
+            return ResponseEntity.ok(getBody());
+        }
+    }
+
+    private boolean isBadRequest() {
+        return body == null;
     }
 }

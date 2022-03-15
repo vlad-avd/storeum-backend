@@ -5,6 +5,7 @@ import com.avdienko.storeum.payload.request.CreateFolderRequest;
 import com.avdienko.storeum.payload.request.EditFolderRequest;
 import com.avdienko.storeum.service.FolderService;
 import lombok.RequiredArgsConstructor;
+import org.slf4j.MDC;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -22,29 +23,35 @@ public class FolderController {
     private final FolderService folderService;
 
     @GetMapping("/users/{userId}/folders/{folderId}")
-    public ResponseEntity<Folder> getFolder(@PathVariable Long folderId) {
+    public ResponseEntity<Folder> getFolder(@PathVariable Long userId, @PathVariable Long folderId) {
+        MDC.put("userId", String.valueOf(userId));
         return ResponseEntity.ok(folderService.getFolderById(folderId));
     }
 
     @GetMapping("/users/{userId}/folders")
     public List<Folder> getUserFolders(@PathVariable Long userId) {
+        MDC.put("userId", String.valueOf(userId));
         return folderService.getUserFolders(userId);
     }
 
     @PostMapping("/users/{userId}/folders")
     public ResponseEntity<Folder> createFolder(@Valid @RequestBody CreateFolderRequest request,
                                                @PathVariable Long userId) {
+        MDC.put("userId", String.valueOf(userId));
         return ResponseEntity.ok(folderService.createFolder(request, userId));
     }
 
     @PostMapping("/users/{userId}/folders/{folderId}")
     public ResponseEntity<Folder> editFolder(@RequestBody EditFolderRequest request,
+                                             @PathVariable Long userId,
                                              @PathVariable Long folderId) {
+        MDC.put("userId", String.valueOf(userId));
         return ResponseEntity.ok(folderService.editFolder(request, folderId));
     }
 
     @DeleteMapping("/users/{userId}/folders/{folderId}")
-    public ResponseEntity<String> deleteFolder(@PathVariable Long folderId) {
+    public ResponseEntity<String> deleteFolder(@PathVariable Long userId, @PathVariable Long folderId) {
+        MDC.put("userId", String.valueOf(userId));
         return ResponseEntity.ok(folderService.deleteFolder(folderId));
     }
 }

@@ -9,7 +9,7 @@ import com.avdienko.storeum.payload.response.GenericResponse;
 import com.avdienko.storeum.repository.NoteRepository;
 import com.avdienko.storeum.validator.NoteValidator;
 import lombok.RequiredArgsConstructor;
-import org.springframework.http.HttpStatus;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
@@ -20,6 +20,7 @@ import static com.avdienko.storeum.util.MessageFormatters.noteNotFound;
 
 @Service
 @RequiredArgsConstructor
+@Slf4j
 public class NoteService {
 
     private final NoteRepository noteRepository;
@@ -28,21 +29,26 @@ public class NoteService {
     private final NoteValidator validator;
 
     public Note getNoteById(Long id) {
+        log.info("Trying to get note, id={}", id);
         return noteRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException(noteNotFound(id)));
     }
 
     public List<Note> getFolderNotes(Long folderId) {
+        log.info("Trying to get folder notes, folderId={}", folderId);
         return noteRepository.findNotesByFolderId(folderId);
     }
 
     public GenericResponse<Note> createNote(CreateNoteRequest request, Long userId, Long folderId) {
+        log.info("Create note request received, title={}, description={}, link={}",
+                request.getTitle(),
+                request.getDescription(),
+                request.getLink());
+
         ValidationResult validationResult = validator.validateCreateRequest(request);
         if (FAIL == validationResult.getValidationStatus()) {
-            return GenericResponse.<Note>builder()
-                    .errorMessage(validationResult.getErrorMessage())
-                    .statusCode(HttpStatus.BAD_REQUEST)
-                    .build();
+            log.info("Create note request validation failed, cause={}", validationResult.getErrorMessage());
+            return new GenericResponse<>(validationResult.getErrorMessage());
         }
 
         Note note = Note.builder()
@@ -55,24 +61,30 @@ public class NoteService {
                 .updatedAt(LocalDateTime.now())
                 .build();
 
-        return GenericResponse.<Note>builder()
-                .body(note)
-                .statusCode(HttpStatus.OK)
-                .build();
+        log.info("Note was created, note={} ", note);
+
+        return new GenericResponse<>(note);
     }
 
     public Note editNote(EditNoteRequest request, Long noteId) {
+        log.info("Edit note request received, noteId={}, title={}, description={}, link={}",
+                noteId,
+                request.getTitle(),
+                request.getDescription(),
+                request.getLink());
         Note note = getNoteById(noteId);
-
         note.setTitle(request.getTitle());
         note.setDescription(request.getDescription());
         note.setLink(request.getLink());
         note.setUpdatedAt(LocalDateTime.now());
 
-        return noteRepository.save(note);
+        Note editedNote = noteRepository.save(note);
+        log.info("Note was successfully edited, note={}", editedNote);
+        return note;
     }
 
     public String deleteNote(Long noteId) {
+        log.info("Trying to delete note, id={}", noteId);
         noteRepository.deleteById(noteId);
         return "Note successfully deleted, id=" + noteId;
     }
