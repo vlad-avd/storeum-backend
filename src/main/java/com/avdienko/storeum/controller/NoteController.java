@@ -24,6 +24,13 @@ public class NoteController {
 
     private final NoteService noteService;
 
+    @GetMapping("/users/{userId}/folders/{folderId}/notes/{noteId}")
+    public ResponseEntity<Note> getNote(@PathVariable Long userId,
+                                     @PathVariable Long noteId) {
+        MDC.put("userId", String.valueOf(userId));
+        return ResponseEntity.ok(noteService.getNoteById(noteId));
+    }
+
     @GetMapping("/users/{userId}/folders/{folderId}/notes")
     public List<Note> getFolderNotes(@PathVariable Long userId,
                                      @PathVariable Long folderId) {
@@ -37,7 +44,7 @@ public class NoteController {
                                         @PathVariable Long folderId) {
         MDC.put("userId", String.valueOf(userId));
         GenericResponse<Note> response = noteService.createNote(request, userId, folderId);
-        return response.resolveResponse();
+        return response.buildResponseEntity();
     }
 
     @PostMapping("/users/{userId}/folders/{folderId}/notes/{noteId}")

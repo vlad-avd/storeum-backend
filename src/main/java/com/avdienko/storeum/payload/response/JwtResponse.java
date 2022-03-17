@@ -13,7 +13,6 @@ public class JwtResponse {
     private String refreshToken;
     private Long id;
     private String username;
-    //TODO: are fields below really needed ?
     private String email;
     private List<String> roles;
 }

@@ -21,6 +21,7 @@ import com.avdienko.storeum.validator.UserValidator;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.slf4j.MDC;
+import org.springframework.http.HttpStatus;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
@@ -104,7 +105,7 @@ public class AuthService {
         MDC.put("userId", String.valueOf(user.getId()));
         log.info("User was created, user={} ", user);
 
-        return new GenericResponse<>(user);
+        return new GenericResponse<>(user, HttpStatus.CREATED);
     }
 
     public RefreshTokenResponse refreshToken(RefreshTokenRequest request) {

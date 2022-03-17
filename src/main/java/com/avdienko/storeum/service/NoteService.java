@@ -10,13 +10,13 @@ import com.avdienko.storeum.repository.NoteRepository;
 import com.avdienko.storeum.validator.NoteValidator;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
 import java.util.List;
 
 import static com.avdienko.storeum.model.ValidationStatus.FAIL;
-import static com.avdienko.storeum.util.MessageFormatters.noteNotFound;
 
 @Service
 @RequiredArgsConstructor
@@ -30,8 +30,9 @@ public class NoteService {
 
     public Note getNoteById(Long id) {
         log.info("Trying to get note, id={}", id);
-        return noteRepository.findById(id)
-                .orElseThrow(() -> new ResourceNotFoundException(noteNotFound(id)));
+        return noteRepository.findById(id).orElseThrow(
+                () -> new ResourceNotFoundException(String.format("Note with id=%s was not found in DB", id))
+        );
     }
 
     public List<Note> getFolderNotes(Long folderId) {
@@ -61,9 +62,9 @@ public class NoteService {
                 .updatedAt(LocalDateTime.now())
                 .build();
 
-        log.info("Note was created, note={} ", note);
-
-        return new GenericResponse<>(note);
+        Note createdNote = noteRepository.save(note);
+        log.info("Note was created, note={} ", createdNote);
+        return new GenericResponse<>(createdNote, HttpStatus.CREATED);
     }
 
     public Note editNote(EditNoteRequest request, Long noteId) {

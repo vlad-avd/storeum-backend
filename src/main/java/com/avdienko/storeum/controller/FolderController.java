@@ -6,6 +6,7 @@ import com.avdienko.storeum.payload.request.EditFolderRequest;
 import com.avdienko.storeum.service.FolderService;
 import lombok.RequiredArgsConstructor;
 import org.slf4j.MDC;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -38,7 +39,8 @@ public class FolderController {
     public ResponseEntity<Folder> createFolder(@Valid @RequestBody CreateFolderRequest request,
                                                @PathVariable Long userId) {
         MDC.put("userId", String.valueOf(userId));
-        return ResponseEntity.ok(folderService.createFolder(request, userId));
+        Folder folder = folderService.createFolder(request, userId);
+        return ResponseEntity.status(HttpStatus.CREATED).body(folder);
     }
 
     @PostMapping("/users/{userId}/folders/{folderId}")

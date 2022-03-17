@@ -45,7 +45,7 @@ public class GlobalExceptionHandler {
 
     @ExceptionHandler(Exception.class)
     public ResponseEntity<ErrorResponse> handleUnknownException(Exception ex, WebRequest request){
-        log.error("Unknown exception, ex={}", ex.getMessage());
+        log.error("Unknown exception, ex: ", ex);
         ErrorResponse response = buildErrorResponse(ex,HttpStatus.INTERNAL_SERVER_ERROR, request);
         return ResponseEntity
                 .status(HttpStatus.INTERNAL_SERVER_ERROR)

@@ -11,8 +11,6 @@ import org.springframework.stereotype.Service;
 
 import java.util.List;
 
-import static com.avdienko.storeum.util.MessageFormatters.folderNotFound;
-
 @Service
 @RequiredArgsConstructor
 @Slf4j
@@ -23,8 +21,9 @@ public class FolderService {
 
     public Folder getFolderById(Long id) {
         log.info("Trying to get folder, id={}", id);
-        return folderRepository.findById(id)
-                .orElseThrow(() -> new ResourceNotFoundException(folderNotFound(id)));
+        return folderRepository.findById(id).orElseThrow(
+                () -> new ResourceNotFoundException(String.format("Folder with id=%s was not found in DB", id))
+        );
     }
 
     public List<Folder> getUserFolders(Long userId) {
