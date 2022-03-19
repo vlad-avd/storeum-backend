@@ -1,5 +1,6 @@
 package com.avdienko.storeum.advice;
 
+import com.avdienko.storeum.exception.ResourceNotAvailableException;
 import com.avdienko.storeum.exception.ResourceNotFoundException;
 import com.avdienko.storeum.exception.TokenRefreshException;
 import lombok.extern.slf4j.Slf4j;
@@ -19,7 +20,7 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(value = TokenRefreshException.class)
     public ResponseEntity<ErrorResponse> handleTokenRefreshException(TokenRefreshException ex, WebRequest request) {
         log.error("Error while refreshing token, ex={}", ex.getMessage());
-        ErrorResponse response = buildErrorResponse(ex,HttpStatus.FORBIDDEN, request);
+        ErrorResponse response = buildErrorResponse(ex, HttpStatus.FORBIDDEN, request);
         return ResponseEntity
                 .status(HttpStatus.FORBIDDEN)
                 .body(response);
@@ -28,7 +29,7 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(ResourceNotFoundException.class)
     public ResponseEntity<ErrorResponse> handleNotFoundException(ResourceNotFoundException ex, WebRequest request){
         log.error("Error while retrieving resource from DB, ex={}", ex.getMessage());
-        ErrorResponse response = buildErrorResponse(ex,HttpStatus.NOT_FOUND, request);
+        ErrorResponse response = buildErrorResponse(ex, HttpStatus.NOT_FOUND, request);
         return ResponseEntity
                 .status(HttpStatus.NOT_FOUND)
                 .body(response);
@@ -36,8 +37,17 @@ public class GlobalExceptionHandler {
 
     @ExceptionHandler(UsernameNotFoundException.class)
     public ResponseEntity<ErrorResponse> handleNotFoundException(UsernameNotFoundException ex, WebRequest request){
-        log.error("Error while retrieving resource from DB, ex={}", ex.getMessage());
-        ErrorResponse response = buildErrorResponse(ex,HttpStatus.NOT_FOUND, request);
+        log.error("Error while retrieving user from DB, ex={}", ex.getMessage());
+        ErrorResponse response = buildErrorResponse(ex, HttpStatus.NOT_FOUND, request);
+        return ResponseEntity
+                .status(HttpStatus.NOT_FOUND)
+                .body(response);
+    }
+
+    @ExceptionHandler(ResourceNotAvailableException.class)
+    public ResponseEntity<ErrorResponse> handleNotAvailableException(ResourceNotAvailableException ex, WebRequest request){
+        log.error("Error while retrieving title from url, ex={}", ex.getMessage());
+        ErrorResponse response = buildErrorResponse(ex, HttpStatus.NOT_FOUND, request);
         return ResponseEntity
                 .status(HttpStatus.NOT_FOUND)
                 .body(response);

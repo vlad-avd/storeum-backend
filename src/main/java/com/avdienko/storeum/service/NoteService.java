@@ -10,6 +10,7 @@ import com.avdienko.storeum.repository.NoteRepository;
 import com.avdienko.storeum.validator.NoteValidator;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.logging.log4j.util.Strings;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
@@ -30,6 +31,7 @@ public class NoteService {
     private final UserService userService;
     private final FolderService folderService;
     private final NoteValidator validator;
+    private final UrlTitleExtractor titleExtractor;
 
     public Note getNoteById(Long id) {
         log.info("Trying to get note, id={}", id);
@@ -56,8 +58,12 @@ public class NoteService {
             return new GenericResponse<>(validationResult.getErrorMessage());
         }
 
+        String noteTitle = Strings.isNotBlank(request.getTitle())
+                ? request.getTitle()
+                : titleExtractor.extract(request.getLink());
+
         Note note = Note.builder()
-                .title(request.getTitle())
+                .title(noteTitle)
                 .description(request.getDescription())
                 .link(request.getLink())
                 .folder(folderService.getFolderById(folderId))

@@ -22,8 +22,6 @@ public class Note {
     @GeneratedValue(strategy = GenerationType.SEQUENCE, generator="n_seq")
     private Long id;
 
-    @NotBlank
-    @Size(max = 30)
     private String title;
 
     private String description;
