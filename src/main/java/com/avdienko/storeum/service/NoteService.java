@@ -10,6 +10,9 @@ import com.avdienko.storeum.repository.NoteRepository;
 import com.avdienko.storeum.validator.NoteValidator;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 
@@ -35,9 +38,10 @@ public class NoteService {
         );
     }
 
-    public List<Note> getFolderNotes(Long folderId) {
+    public List<Note> getFolderNotes(Long folderId, Integer pageNumber) {
         log.info("Trying to get folder notes, folderId={}", folderId);
-        return noteRepository.findNotesByFolderId(folderId);
+        Pageable page = PageRequest.of(pageNumber, 12, Sort.by("createdAt").descending());
+        return noteRepository.findNotesByFolderId(folderId, page);
     }
 
     public GenericResponse<Note> createNote(CreateNoteRequest request, Long userId, Long folderId) {

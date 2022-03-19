@@ -33,9 +33,10 @@ public class NoteController {
 
     @GetMapping("/users/{userId}/folders/{folderId}/notes")
     public List<Note> getFolderNotes(@PathVariable Long userId,
-                                     @PathVariable Long folderId) {
+                                     @PathVariable Long folderId,
+                                     @RequestParam("page") Integer pageNumber) {
         MDC.put("userId", String.valueOf(userId));
-        return noteService.getFolderNotes(folderId);
+        return noteService.getFolderNotes(folderId, pageNumber);
     }
 
     @PostMapping("/users/{userId}/folders/{folderId}/notes")
