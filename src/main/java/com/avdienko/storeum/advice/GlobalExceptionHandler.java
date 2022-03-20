@@ -1,11 +1,12 @@
 package com.avdienko.storeum.advice;
 
-import com.avdienko.storeum.exception.ResourceNotAvailableException;
+import com.avdienko.storeum.exception.ResourceUnavailableException;
 import com.avdienko.storeum.exception.ResourceNotFoundException;
-import com.avdienko.storeum.exception.TokenRefreshException;
+import com.avdienko.storeum.exception.RefreshTokenException;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.authentication.DisabledException;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
@@ -17,8 +18,8 @@ import java.time.LocalDate;
 @Slf4j
 public class GlobalExceptionHandler {
 
-    @ExceptionHandler(value = TokenRefreshException.class)
-    public ResponseEntity<ErrorResponse> handleTokenRefreshException(TokenRefreshException ex, WebRequest request) {
+    @ExceptionHandler(value = RefreshTokenException.class)
+    public ResponseEntity<ErrorResponse> handleTokenRefreshException(RefreshTokenException ex, WebRequest request) {
         log.error("Error while refreshing token, ex={}", ex.getMessage());
         ErrorResponse response = buildErrorResponse(ex, HttpStatus.FORBIDDEN, request);
         return ResponseEntity
@@ -27,7 +28,7 @@ public class GlobalExceptionHandler {
     }
 
     @ExceptionHandler(ResourceNotFoundException.class)
-    public ResponseEntity<ErrorResponse> handleNotFoundException(ResourceNotFoundException ex, WebRequest request){
+    public ResponseEntity<ErrorResponse> handleNotFoundException(ResourceNotFoundException ex, WebRequest request) {
         log.error("Error while retrieving resource from DB, ex={}", ex.getMessage());
         ErrorResponse response = buildErrorResponse(ex, HttpStatus.NOT_FOUND, request);
         return ResponseEntity
@@ -36,7 +37,7 @@ public class GlobalExceptionHandler {
     }
 
     @ExceptionHandler(UsernameNotFoundException.class)
-    public ResponseEntity<ErrorResponse> handleNotFoundException(UsernameNotFoundException ex, WebRequest request){
+    public ResponseEntity<ErrorResponse> handleNotFoundException(UsernameNotFoundException ex, WebRequest request) {
         log.error("Error while retrieving user from DB, ex={}", ex.getMessage());
         ErrorResponse response = buildErrorResponse(ex, HttpStatus.NOT_FOUND, request);
         return ResponseEntity
@@ -44,8 +45,8 @@ public class GlobalExceptionHandler {
                 .body(response);
     }
 
-    @ExceptionHandler(ResourceNotAvailableException.class)
-    public ResponseEntity<ErrorResponse> handleNotAvailableException(ResourceNotAvailableException ex, WebRequest request){
+    @ExceptionHandler(ResourceUnavailableException.class)
+    public ResponseEntity<ErrorResponse> handleNotAvailableException(ResourceUnavailableException ex, WebRequest request) {
         log.error("Error while retrieving title from url, ex={}", ex.getMessage());
         ErrorResponse response = buildErrorResponse(ex, HttpStatus.NOT_FOUND, request);
         return ResponseEntity
@@ -53,10 +54,19 @@ public class GlobalExceptionHandler {
                 .body(response);
     }
 
+    @ExceptionHandler(DisabledException.class)
+    public ResponseEntity<ErrorResponse> handleUserUnconfirmedException(DisabledException ex, WebRequest request) {
+        log.error("Error when login into non confirmed account, ex={}", ex.getMessage());
+        ErrorResponse response = buildErrorResponse(ex, HttpStatus.NOT_FOUND, request);
+        return ResponseEntity
+                .status(HttpStatus.NOT_FOUND)
+                .body(response);
+    }
+
     @ExceptionHandler(Exception.class)
-    public ResponseEntity<ErrorResponse> handleUnknownException(Exception ex, WebRequest request){
+    public ResponseEntity<ErrorResponse> handleUnknownException(Exception ex, WebRequest request) {
         log.error("Unknown exception, ex: ", ex);
-        ErrorResponse response = buildErrorResponse(ex,HttpStatus.INTERNAL_SERVER_ERROR, request);
+        ErrorResponse response = buildErrorResponse(ex, HttpStatus.INTERNAL_SERVER_ERROR, request);
         return ResponseEntity
                 .status(HttpStatus.INTERNAL_SERVER_ERROR)
                 .body(response);

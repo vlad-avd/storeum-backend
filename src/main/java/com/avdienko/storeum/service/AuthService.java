@@ -3,8 +3,9 @@ package com.avdienko.storeum.service;
 import com.avdienko.storeum.auth.UserDetailsImpl;
 import com.avdienko.storeum.auth.jwt.JwtUtils;
 import com.avdienko.storeum.exception.ResourceNotFoundException;
-import com.avdienko.storeum.exception.TokenRefreshException;
+import com.avdienko.storeum.exception.RefreshTokenException;
 import com.avdienko.storeum.model.ValidationResult;
+import com.avdienko.storeum.model.entity.EmailConfirmToken;
 import com.avdienko.storeum.model.entity.RefreshToken;
 import com.avdienko.storeum.model.entity.Role;
 import com.avdienko.storeum.model.entity.User;
@@ -29,6 +30,7 @@ import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Collections;
 import java.util.List;
@@ -49,6 +51,8 @@ public class AuthService {
     private final JwtUtils jwtUtils;
     private final RefreshTokenService refreshTokenService;
     private final UserValidator validator;
+    private final EmailConfirmationService emailConfirmationService;
+    private final MailService mailService;
 
     public JwtResponse auth(LoginRequest request) {
         log.info("Login request received for user with username={}", request.getUsername());
@@ -78,6 +82,8 @@ public class AuthService {
                 .build();
     }
 
+    //TODO: does it work?
+    @Transactional
     public GenericResponse<User> register(RegisterRequest request) {
         log.info("Register request received for user with username={}", request.getUsername());
 
@@ -98,12 +104,16 @@ public class AuthService {
                 .email(request.getEmail())
                 .password(encodedPwd)
                 .roles(Collections.singletonList(userRole))
+                .isEnabled(false)
                 .build();
 
         userRepository.save(user);
 
         MDC.put("userId", String.valueOf(user.getId()));
         log.info("User was created, user={} ", user);
+
+        EmailConfirmToken token = emailConfirmationService.createToken(user.getId());
+        mailService.send(request.getEmail(), user.getUsername(), token.getToken());
 
         return new GenericResponse<>(user, HttpStatus.CREATED);
     }
@@ -120,7 +130,7 @@ public class AuthService {
                     log.info("Token was refreshed successfully");
                     return new RefreshTokenResponse(token, requestRefreshToken);
                 })
-                .orElseThrow(() -> new TokenRefreshException(requestRefreshToken, "Refresh token is not in database"));
+                .orElseThrow(() -> new RefreshTokenException(requestRefreshToken, "Refresh token is not in database"));
     }
 
     public String logout(LogoutRequest request) {

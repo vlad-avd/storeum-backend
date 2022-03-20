@@ -17,9 +17,10 @@ import java.time.LocalDateTime;
 @NoArgsConstructor
 @AllArgsConstructor
 public class Note {
+
     @Id
     @SequenceGenerator(name = "n_seq", sequenceName = "note_sequence", allocationSize = 10)
-    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator="n_seq")
+    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "n_seq")
     private Long id;
 
     private String title;

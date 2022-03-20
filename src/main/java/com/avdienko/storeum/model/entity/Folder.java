@@ -20,9 +20,10 @@ import java.util.List;
 @NoArgsConstructor
 @ToString
 public class Folder {
+
     @Id
     @SequenceGenerator(name = "f_seq", sequenceName = "folder_sequence", allocationSize = 10)
-    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator="f_seq")
+    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "f_seq")
     private Long id;
 
     @NotBlank

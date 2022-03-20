@@ -1,6 +1,6 @@
 package com.avdienko.storeum.service;
 
-import com.avdienko.storeum.exception.ResourceNotAvailableException;
+import com.avdienko.storeum.exception.ResourceUnavailableException;
 import org.jsoup.Jsoup;
 import org.springframework.stereotype.Service;
 
@@ -13,7 +13,7 @@ public class UrlTitleExtractor {
         try {
             return Jsoup.connect(url).get().title();
         } catch (IOException e) {
-            throw new ResourceNotAvailableException(String.format("Cannot extract title from url=%s", url));
+            throw new ResourceUnavailableException(String.format("Cannot extract title from url=%s", url));
         }
     }
 }

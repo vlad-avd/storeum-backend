@@ -20,7 +20,19 @@ spring:
         jdbc:
           lob:
             non_contextual_creation: true
-#    show-sql: true
+  #    show-sql: true
+  mail:
+    host: smtp.gmail.com
+    port: 587
+    username: storeum.app@gmail.com
+    password: ""
+    test-connection: true
+    properties:
+      mail:
+        smtp:
+          auth: true
+          starttls:
+            enable: true
 
 # App Properties
 storeum:

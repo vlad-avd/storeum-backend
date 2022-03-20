@@ -10,6 +10,7 @@ import com.avdienko.storeum.payload.response.GenericResponse;
 import com.avdienko.storeum.payload.response.JwtResponse;
 import com.avdienko.storeum.payload.response.RefreshTokenResponse;
 import com.avdienko.storeum.service.AuthService;
+import com.avdienko.storeum.service.EmailConfirmationService;
 import lombok.RequiredArgsConstructor;
 import org.slf4j.MDC;
 import org.springframework.http.ResponseEntity;
@@ -27,6 +28,7 @@ import static com.avdienko.storeum.util.Constants.BASE_URL;
 public class AuthController {
 
     private final AuthService authService;
+    private final EmailConfirmationService emailConfirmationService;
 
     @PostMapping("/login")
     public ResponseEntity<JwtResponse> authenticateUser(@Valid @RequestBody LoginRequest request) {
@@ -37,6 +39,12 @@ public class AuthController {
     @PostMapping("/register")
     public ResponseEntity<?> registerUser(@Valid @RequestBody RegisterRequest request) {
         GenericResponse<User> response = authService.register(request);
+        return response.buildResponseEntity();
+    }
+
+    @GetMapping("/confirm")
+    public ResponseEntity<?> confirmEmail(@RequestParam String token) {
+        GenericResponse<String> response = emailConfirmationService.confirmEmail(token);
         return response.buildResponseEntity();
     }
 

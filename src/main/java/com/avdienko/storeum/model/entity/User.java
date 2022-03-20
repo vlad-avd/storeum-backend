@@ -9,7 +9,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 @Entity
-@Table(	name = "users",
+@Table(name = "users",
         uniqueConstraints = {
                 @UniqueConstraint(columnNames = {"username", "email"})
         })
@@ -21,7 +21,7 @@ import java.util.List;
 public class User {
     @Id
     @SequenceGenerator(name = "u_seq", sequenceName = "user_sequence", allocationSize = 10)
-    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator="u_seq")
+    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "u_seq")
     private Long id;
 
     @NotBlank
@@ -39,7 +39,7 @@ public class User {
     private String password;
 
     @ManyToMany(fetch = FetchType.LAZY)
-    @JoinTable(	name = "user_roles",
+    @JoinTable(name = "user_roles",
             joinColumns = @JoinColumn(name = "user_id"),
             inverseJoinColumns = @JoinColumn(name = "role_id"))
     private List<Role> roles = new ArrayList<>();
@@ -47,6 +47,8 @@ public class User {
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
     @JsonIgnore
     private List<Folder> folders = new ArrayList<>();
+
+    private boolean isEnabled;
 
     public User(String username, String email, String password) {
         this.username = username;

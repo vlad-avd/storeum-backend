@@ -11,9 +11,10 @@ import java.time.Instant;
 @NoArgsConstructor
 @Entity(name = "refresh_token")
 public class RefreshToken {
+
     @Id
     @SequenceGenerator(name = "rt_seq", sequenceName = "refresh_token_sequence", allocationSize = 10)
-    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator="rt_seq")
+    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "rt_seq")
     private Long id;
 
     @OneToOne

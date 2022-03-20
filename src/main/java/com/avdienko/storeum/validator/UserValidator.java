@@ -6,9 +6,6 @@ import com.avdienko.storeum.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 
-import static com.avdienko.storeum.model.ValidationStatus.FAIL;
-import static com.avdienko.storeum.model.ValidationStatus.SUCCESS;
-
 @Component
 @RequiredArgsConstructor
 public class UserValidator {
@@ -17,22 +14,14 @@ public class UserValidator {
 
     public ValidationResult validateRegisterRequest(RegisterRequest request) {
         if (userRepository.existsByUsername(request.getUsername())) {
-            return ValidationResult.builder()
-                    .validationStatus(FAIL)
-                    .errorMessage("Error: Username is already taken.")
-                    .build();
+            return ValidationResult.failure("Error: Username is already taken.");
         }
 
         if (userRepository.existsByEmail(request.getEmail())) {
-            return ValidationResult.builder()
-                    .validationStatus(FAIL)
-                    .errorMessage("Error: Email is already in use.")
-                    .build();
+            return ValidationResult.failure("Error: Email is already in use.");
         }
 
-        return ValidationResult.builder()
-                .validationStatus(SUCCESS)
-                .build();
+        return ValidationResult.success();
     }
 
 }

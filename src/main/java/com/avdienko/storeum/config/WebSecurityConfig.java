@@ -67,6 +67,7 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter implements W
                         BASE_URL + "/auth/login",
                         BASE_URL + "/auth/register",
                         BASE_URL + "/auth/refresh-token",
+                        BASE_URL + "/auth/confirm",
                 }).permitAll()
                 .anyRequest().authenticated();
 

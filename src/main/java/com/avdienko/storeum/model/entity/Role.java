@@ -10,6 +10,7 @@ import javax.persistence.*;
 @Setter
 @NoArgsConstructor
 public class Role {
+
     @Id
     @GeneratedValue(strategy = GenerationType.SEQUENCE)
     private Long id;

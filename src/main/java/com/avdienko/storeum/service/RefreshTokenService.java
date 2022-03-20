@@ -1,7 +1,7 @@
 package com.avdienko.storeum.service;
 
 import com.avdienko.storeum.exception.ResourceNotFoundException;
-import com.avdienko.storeum.exception.TokenRefreshException;
+import com.avdienko.storeum.exception.RefreshTokenException;
 import com.avdienko.storeum.model.entity.RefreshToken;
 import com.avdienko.storeum.repository.RefreshTokenRepository;
 import lombok.RequiredArgsConstructor;
@@ -44,7 +44,7 @@ public class RefreshTokenService {
         if (token.getExpiryDate().compareTo(Instant.now()) < 0) {
             refreshTokenRepository.delete(token);
             String errorMessage = "Refresh token was expired. Please make a new sign in request";
-            throw new TokenRefreshException(token.getToken(), errorMessage);
+            throw new RefreshTokenException(token.getToken(), errorMessage);
         }
 
         return token;

@@ -2,11 +2,11 @@ INSERT INTO roles(id, name)
 VALUES
     (1, 'ROLE_USER'), (2, 'ROLE_ADMIN');
 
-INSERT INTO users(id, username, email, password)
+INSERT INTO users(id, username, email, password, is_enabled)
 VALUES
 -- passwords are encoded: 'user' and 'admin' accordingly
-    (1, 'user', 'user@gmail.com', '$2a$12$M0sPZsqwKvGdPzmkITDnPuFTDbCzGGsjvHXaA3PUEdYYJSymIXESG'),
-    (2, 'admin', 'admin@gmail.com', '$2a$12$YfEgDr9gKxxMoEjZY5WD9eXVkT3h9b.IFMc6Fa8MSwvZbAeGtxo1W');
+    (1, 'user', 'user@gmail.com', '$2a$12$M0sPZsqwKvGdPzmkITDnPuFTDbCzGGsjvHXaA3PUEdYYJSymIXESG', 'true'),
+    (2, 'admin', 'admin@gmail.com', '$2a$12$YfEgDr9gKxxMoEjZY5WD9eXVkT3h9b.IFMc6Fa8MSwvZbAeGtxo1W', 'true');
 
 INSERT INTO user_roles(user_id, role_id)
 VALUES
