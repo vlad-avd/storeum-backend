@@ -9,7 +9,7 @@ import javax.validation.constraints.Size;
 public class EditProfileRequest {
 
     @Size(min = 3, max = 20)
-    private String username;
+    private String firstName;
 
     @Size(max = 50)
     @Email

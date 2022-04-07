@@ -2,7 +2,7 @@ INSERT INTO roles(id, name)
 VALUES
     (1, 'ROLE_USER'), (2, 'ROLE_ADMIN');
 
-INSERT INTO users(id, username, email, password, is_enabled)
+INSERT INTO users(id, first_name, email, password, is_enabled)
 VALUES
 -- passwords are encoded: 'user' and 'admin' accordingly
     (1, 'user', 'user@gmail.com', '$2a$12$M0sPZsqwKvGdPzmkITDnPuFTDbCzGGsjvHXaA3PUEdYYJSymIXESG', 'true'),
@@ -55,3 +55,4 @@ VALUES
 ALTER SEQUENCE user_sequence RESTART WITH 12;
 ALTER SEQUENCE folder_sequence RESTART WITH 18;
 ALTER SEQUENCE note_sequence RESTART WITH 35;
+ALTER SEQUENCE ec_token_sequence RESTART WITH 10;

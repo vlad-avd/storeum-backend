@@ -22,7 +22,7 @@ public class UserDetailsImpl implements UserDetails {
     private static final long serialVersionUID = 1L;
 
     private Long id;
-    private String username;
+    private String firstName;
     private String email;
     @JsonIgnore
     private String password;
@@ -37,12 +37,17 @@ public class UserDetailsImpl implements UserDetails {
 
         return UserDetailsImpl.builder()
                 .id(user.getId())
-                .username(user.getUsername())
+                .firstName(user.getFirstName())
                 .email(user.getEmail())
                 .password(user.getPassword())
                 .authorities(authorities)
                 .isEnabled(user.isEnabled())
                 .build();
+    }
+
+    @Override
+    public String getUsername() {
+        return this.email;
     }
 
     @Override

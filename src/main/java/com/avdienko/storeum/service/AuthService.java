@@ -55,10 +55,10 @@ public class AuthService {
     private final MailService mailService;
 
     public JwtResponse auth(LoginRequest request) {
-        log.info("Login request received for user with username={}", request.getUsername());
+        log.info("Login request received for user with email={}", request.getEmail());
 
         Authentication authentication = authenticationManager.authenticate(
-                new UsernamePasswordAuthenticationToken(request.getUsername(), request.getPassword()));
+                new UsernamePasswordAuthenticationToken(request.getEmail(), request.getPassword()));
         SecurityContextHolder.getContext().setAuthentication(authentication);
         UserDetailsImpl userDetails = (UserDetailsImpl) authentication.getPrincipal();
 
@@ -76,7 +76,7 @@ public class AuthService {
                 .accessToken(jwt)
                 .refreshToken(refreshToken.getToken())
                 .id(userDetails.getId())
-                .username(userDetails.getUsername())
+                .firstName(userDetails.getFirstName())
                 .email(userDetails.getEmail())
                 .roles(roles)
                 .build();
@@ -85,7 +85,7 @@ public class AuthService {
     //TODO: does it work?
     @Transactional
     public GenericResponse<User> register(RegisterRequest request) {
-        log.info("Register request received for user with username={}", request.getUsername());
+        log.info("Register request received for user with email={}", request.getEmail());
 
         ValidationResult validationResult = validator.validateRegisterRequest(request);
         if (FAIL == validationResult.getValidationStatus()) {
@@ -100,7 +100,7 @@ public class AuthService {
 
         String encodedPwd = encoder.encode(request.getPassword());
         User user = User.builder()
-                .username(request.getUsername())
+                .firstName(request.getFirstName())
                 .email(request.getEmail())
                 .password(encodedPwd)
                 .roles(Collections.singletonList(userRole))
@@ -113,7 +113,7 @@ public class AuthService {
         log.info("User was created, user={} ", user);
 
         EmailConfirmToken token = emailConfirmationService.createToken(user.getId());
-        mailService.send(request.getEmail(), user.getUsername(), token.getToken());
+        mailService.send(request.getEmail(), user.getFirstName(), token.getToken());
 
         return new GenericResponse<>(user, HttpStatus.CREATED);
     }
@@ -126,7 +126,7 @@ public class AuthService {
                 .map(refreshTokenService::verifyExpiration)
                 .map(RefreshToken::getUser)
                 .map(user -> {
-                    String token = jwtUtils.generateTokenFromUsername(user.getUsername());
+                    String token = jwtUtils.generateTokenFromEmail(user.getFirstName());
                     log.info("Token was refreshed successfully");
                     return new RefreshTokenResponse(token, requestRefreshToken);
                 })

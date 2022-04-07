@@ -21,13 +21,13 @@ public class MailService {
     private final JavaMailSender mailSender;
 
     @Async
-    public void send(String sendTo, String username, String token) {
+    public void send(String sendTo, String firstName, String token) {
         try {
             MimeMessage mimeMessage = mailSender.createMimeMessage();
             MimeMessageHelper helper = new MimeMessageHelper(mimeMessage, "UTF-8");
             helper.setTo(sendTo);
             helper.setSubject("Confirm your email");
-            helper.setText(buildEmailBody(username, token), true);
+            helper.setText(buildEmailBody(firstName, token), true);
             mailSender.send(mimeMessage);
             log.info("Confirmation email send successfully");
         } catch (MessagingException ex) {
@@ -35,7 +35,7 @@ public class MailService {
         }
     }
 
-    private String buildEmailBody(String username, String token) {
+    private String buildEmailBody(String firstName, String token) {
         String url = String.format("%s%s/auth/confirm?token=%s", HOST, BASE_URL, token);
         return """
                 <html>
@@ -44,6 +44,6 @@ public class MailService {
                     <a href="%s">Activate Now</a>
                 </html>
                 """
-                .formatted(username, url);
+                .formatted(firstName, url);
     }
 }

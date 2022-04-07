@@ -40,6 +40,7 @@ public class EmailConfirmationService {
                 .user(userService.getUserById(userId))
                 .createdAt(LocalDateTime.now())
                 .expiresAt(LocalDateTime.now().plusMinutes(15))
+                .isConfirmed(false)
                 .build();
         log.info("Email confirmation token successfully created");
 
@@ -56,7 +57,7 @@ public class EmailConfirmationService {
             return new GenericResponse<>(validationResult.getErrorMessage());
         }
 
-        tokenEntity.setConfirmedAt(LocalDateTime.now());
+        tokenEntity.setConfirmed(true);
         tokenRepository.save(tokenEntity);
         User user = tokenEntity.getUser();
         user.setEnabled(true);

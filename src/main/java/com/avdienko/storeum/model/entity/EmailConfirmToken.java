@@ -12,7 +12,7 @@ import java.time.LocalDateTime;
 @AllArgsConstructor
 @NoArgsConstructor
 @Entity(name = "email_confirm_token")
-public class EmailConfirmToken {
+    public class EmailConfirmToken {
 
     @Id
     @SequenceGenerator(name = "ect_seq", sequenceName = "ec_token_sequence", allocationSize = 10)
@@ -28,7 +28,7 @@ public class EmailConfirmToken {
     @Column(nullable = false)
     private LocalDateTime expiresAt;
 
-    private LocalDateTime confirmedAt;
+    private boolean isConfirmed;
 
     @ManyToOne
     @JsonIgnore

@@ -19,21 +19,21 @@ public class JwtUtils {
     private int jwtExpirationMs;
 
     public String generateJwt(UserDetailsImpl userPrincipal) {
-        String jwt = generateTokenFromUsername(userPrincipal.getUsername());
+        String jwt = generateTokenFromEmail(userPrincipal.getEmail());
         log.info("Access token was generated");
         return jwt;
     }
 
-    public String generateTokenFromUsername(String username) {
+    public String generateTokenFromEmail(String email) {
         return Jwts.builder()
-                .setSubject(username)
+                .setSubject(email)
                 .setIssuedAt(new Date())
                 .setExpiration(new Date((new Date()).getTime() + jwtExpirationMs))
                 .signWith(SignatureAlgorithm.HS512, jwtSecret)
                 .compact();
     }
 
-    public String getUsernameFromJwt(String token) {
+    public String getEmailFromJwt(String token) {
         return Jwts.parser()
                 .setSigningKey(jwtSecret)
                 .parseClaimsJws(token)

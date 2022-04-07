@@ -23,9 +23,9 @@ public class UserService {
     }
 
     public User editProfile(EditProfileRequest request, Long userId) {
-        log.info("Edit profile request received, username={}, email={}", request.getUsername(), request.getEmail());
+        log.info("Edit profile request received");
         User user = getUserById(userId);
-        user.setUsername(request.getUsername());
+        user.setFirstName(request.getFirstName());
         user.setEmail(request.getEmail());
 
         User editedUser = userRepository.save(user);

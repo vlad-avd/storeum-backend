@@ -10,7 +10,7 @@ import java.time.LocalDateTime;
 public class EmailConfirmationValidator {
 
     public ValidationResult validate(EmailConfirmToken token) {
-        if (token.getConfirmedAt() != null) {
+        if (token.isConfirmed()) {
             return ValidationResult.failure("Email already confirmed");
         }
         if (token.getExpiresAt().isBefore(LocalDateTime.now())) {
