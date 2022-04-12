@@ -1,6 +1,6 @@
 package com.storeum.controller;
 
-import com.storeum.auth.UserDetailsImpl;
+import com.storeum.auth.CustomUserDetails;
 import com.storeum.model.entity.User;
 import com.storeum.payload.request.LoginRequest;
 import com.storeum.payload.request.LogoutRequest;
@@ -49,7 +49,7 @@ public class AuthController {
 
     @PostMapping("/refresh-token")
     public ResponseEntity<RefreshTokenResponse> refreshToken(@Valid @RequestBody RefreshTokenRequest request,
-                                                             @AuthenticationPrincipal UserDetailsImpl user) {
+                                                             @AuthenticationPrincipal CustomUserDetails user) {
         MDC.put("userId", String.valueOf(user.getId()));
         RefreshTokenResponse response = authService.refreshToken(request);
         return ResponseEntity.ok(response);
@@ -57,7 +57,7 @@ public class AuthController {
 
     @PostMapping("/logout")
     public ResponseEntity<String> logoutUser(@Valid @RequestBody LogoutRequest request,
-                                             @AuthenticationPrincipal UserDetailsImpl user) {
+                                             @AuthenticationPrincipal CustomUserDetails user) {
         MDC.put("userId", String.valueOf(user.getId()));
         String response = authService.logout(request);
         return ResponseEntity.ok(response);

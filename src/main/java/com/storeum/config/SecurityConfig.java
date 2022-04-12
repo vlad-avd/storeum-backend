@@ -1,6 +1,6 @@
 package com.storeum.config;
 
-import com.avdienko.storeum.auth.jwt.*;
+import com.storeum.auth.*;
 import com.storeum.auth.jwt.*;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
@@ -26,13 +26,17 @@ import static com.storeum.util.Constants.BASE_URL;
 @RequiredArgsConstructor
 //TODO: cleanup or uncomment below annotation params
 @EnableGlobalMethodSecurity(
-        // securedEnabled = true,
-        // jsr250Enabled = true,
+         securedEnabled = true,
+         jsr250Enabled = true,
         prePostEnabled = true)
-public class WebSecurityConfig extends WebSecurityConfigurerAdapter implements WebMvcConfigurer {
+public class SecurityConfig extends WebSecurityConfigurerAdapter implements WebMvcConfigurer {
+
     private final UserDetailsService userDetailsService;
     private final AuthEntryPointJwt unauthorizedHandler;
     private final JwtUtils jwtUtils;
+    private final GoogleAuthService oauthService;
+    private final OAuthSuccessHandler oAuthSuccessHandler;
+    private final OAuthFailureHandler oAuthFailureHandler;
 
     @Bean
     public AuthTokenFilter authenticationJwtTokenFilter() {
@@ -41,9 +45,7 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter implements W
 
     @Override
     public void configure(AuthenticationManagerBuilder authenticationManagerBuilder) throws Exception {
-        authenticationManagerBuilder
-                .userDetailsService(userDetailsService)
-                .passwordEncoder(passwordEncoder());
+        authenticationManagerBuilder.userDetailsService(userDetailsService);
     }
 
     @Bean
@@ -60,15 +62,27 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter implements W
     @Override
     protected void configure(HttpSecurity http) throws Exception {
         http.cors().and().csrf().disable()
-                .exceptionHandling().authenticationEntryPoint(unauthorizedHandler).and()
-                .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS).and()
+                .exceptionHandling().authenticationEntryPoint(unauthorizedHandler)
+                .and()
+                .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS)
+                .and()
                 .authorizeRequests().antMatchers(new String[]{
                         BASE_URL + "/auth/login",
                         BASE_URL + "/auth/register",
                         BASE_URL + "/auth/refresh-token",
                         BASE_URL + "/auth/confirm",
-                }).permitAll()
-                .anyRequest().authenticated();
+                        BASE_URL + "/oauth2/**",
+                }).permitAll().anyRequest().authenticated()
+                .and()
+                .oauth2Login()
+                .authorizationEndpoint().baseUri(BASE_URL + "/oauth2/authorize")
+                .and()
+                .redirectionEndpoint().baseUri(BASE_URL + "/oauth2/callback/*")
+                .and()
+                .userInfoEndpoint().userService(oauthService)
+                .and()
+                .successHandler(oAuthSuccessHandler)
+                .failureHandler(oAuthFailureHandler);
 
         http.addFilterBefore(authenticationJwtTokenFilter(), UsernamePasswordAuthenticationFilter.class);
     }
@@ -77,7 +91,7 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter implements W
     @Override
     public void addCorsMappings(CorsRegistry registry) {
         registry.addMapping("/**")
-                .allowedOrigins("http://localhost:3000")
+                .allowedOrigins("http://localhost:3000", "http://localhost:8080")
                 .allowedMethods("*");
     }
 }

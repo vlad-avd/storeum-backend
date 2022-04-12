@@ -1,22 +1,22 @@
 package com.storeum.auth;
 
-import com.storeum.model.entity.User;
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.storeum.model.entity.User;
 import lombok.*;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.oauth2.core.user.OAuth2User;
 
 import java.io.Serial;
-import java.util.Collection;
-import java.util.List;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @AllArgsConstructor
 @Getter
 @Builder
 @EqualsAndHashCode
-public class UserDetailsImpl implements UserDetails {
+public class CustomUserDetails implements UserDetails {
 
     @Serial
     private static final long serialVersionUID = 1L;
@@ -27,15 +27,16 @@ public class UserDetailsImpl implements UserDetails {
     @JsonIgnore
     private String password;
     private boolean isEnabled;
+    private Map<String, Object> attributes;
 
     private Collection<? extends GrantedAuthority> authorities;
 
-    public static UserDetailsImpl build(User user) {
+    public static CustomUserDetails build(User user) {
         List<GrantedAuthority> authorities = user.getRoles().stream()
                 .map(role -> new SimpleGrantedAuthority(role.getName().name()))
                 .collect(Collectors.toList());
 
-        return UserDetailsImpl.builder()
+        return CustomUserDetails.builder()
                 .id(user.getId())
                 .firstName(user.getFirstName())
                 .email(user.getEmail())

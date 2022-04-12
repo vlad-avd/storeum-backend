@@ -21,7 +21,7 @@ public class RefreshTokenService {
     private final RefreshTokenRepository refreshTokenRepository;
     private final UserService userService;
 
-    @Value("${storeum.app.jwt-refresh-expiration-ms}")
+    @Value("${app.jwt-refresh-expiration-ms}")
     private Long refreshTokenDurationMs;
 
     public Optional<RefreshToken> findByToken(String token) {

@@ -1,6 +1,6 @@
 package com.storeum.auth.jwt;
 
-import com.storeum.auth.UserDetailsImpl;
+import com.storeum.auth.CustomUserDetails;
 import io.jsonwebtoken.*;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
@@ -12,14 +12,14 @@ import java.util.Date;
 @Slf4j
 public class JwtUtils {
 
-    @Value("${storeum.app.jwt-secret}")
+    @Value("${app.jwt-secret}")
     private String jwtSecret;
 
-    @Value("${storeum.app.jwt-expiration-ms}")
+    @Value("${app.jwt-expiration-ms}")
     private int jwtExpirationMs;
 
-    public String generateJwt(UserDetailsImpl userPrincipal) {
-        String jwt = generateTokenFromEmail(userPrincipal.getEmail());
+    public String generateJwt(CustomUserDetails customUserDetails) {
+        String jwt = generateTokenFromEmail(customUserDetails.getEmail());
         log.info("Access token was generated");
         return jwt;
     }

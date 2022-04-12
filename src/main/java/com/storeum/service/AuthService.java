@@ -1,23 +1,14 @@
 package com.storeum.service;
 
-import com.storeum.auth.UserDetailsImpl;
+import com.storeum.auth.CustomUserDetails;
 import com.storeum.auth.jwt.JwtUtils;
-import com.storeum.exception.ResourceNotFoundException;
 import com.storeum.exception.RefreshTokenException;
+import com.storeum.exception.ResourceNotFoundException;
 import com.storeum.model.ValidationResult;
-import com.storeum.model.entity.EmailConfirmToken;
-import com.storeum.model.entity.RefreshToken;
-import com.storeum.model.entity.Role;
-import com.storeum.model.entity.User;
-import com.storeum.payload.request.LoginRequest;
-import com.storeum.payload.request.LogoutRequest;
-import com.storeum.payload.request.RefreshTokenRequest;
-import com.storeum.payload.request.RegisterRequest;
-import com.storeum.payload.response.GenericResponse;
-import com.storeum.payload.response.JwtResponse;
-import com.storeum.payload.response.RefreshTokenResponse;
+import com.storeum.model.entity.*;
+import com.storeum.payload.request.*;
+import com.storeum.payload.response.*;
 import com.storeum.repository.RoleRepository;
-import com.storeum.repository.UserRepository;
 import com.storeum.validator.UserValidator;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -45,7 +36,7 @@ import static com.storeum.model.entity.ERole.ROLE_USER;
 public class AuthService {
 
     private final AuthenticationManager authenticationManager;
-    private final UserRepository userRepository;
+    private final UserService userService;
     private final RoleRepository roleRepository;
     private final PasswordEncoder encoder;
     private final JwtUtils jwtUtils;
@@ -60,7 +51,7 @@ public class AuthService {
         Authentication authentication = authenticationManager.authenticate(
                 new UsernamePasswordAuthenticationToken(request.getEmail(), request.getPassword()));
         SecurityContextHolder.getContext().setAuthentication(authentication);
-        UserDetailsImpl userDetails = (UserDetailsImpl) authentication.getPrincipal();
+        CustomUserDetails userDetails = (CustomUserDetails) authentication.getPrincipal();
 
         MDC.put("userId", String.valueOf(userDetails.getId()));
 
@@ -107,7 +98,7 @@ public class AuthService {
                 .isEnabled(false)
                 .build();
 
-        userRepository.save(user);
+        userService.save(user);
 
         MDC.put("userId", String.valueOf(user.getId()));
         log.info("User was created, user={} ", user);

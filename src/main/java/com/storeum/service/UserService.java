@@ -22,6 +22,17 @@ public class UserService {
         );
     }
 
+    public User getUserByEmail(String email) {
+        log.info("Trying to get user, email={}", email);
+        return userRepository.findByEmail(email).orElseThrow(
+                () -> new ResourceNotFoundException(String.format("User with email=%s was not found in DB", email))
+        );
+    }
+
+//    public boolean isUserExistsByEmail(String email) {
+//        return userRepository.existsByEmail(email);
+//    }
+
     public User editProfile(EditProfileRequest request, Long userId) {
         log.info("Edit profile request received");
         User user = getUserById(userId);

@@ -32,7 +32,7 @@ public class User {
     @Email
     private String email;
 
-    @NotBlank
+//    @NotBlank
     @Size(max = 120)
     @JsonIgnore
     private String password;

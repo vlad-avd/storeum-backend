@@ -30,8 +30,8 @@ public class AuthTokenFilter extends OncePerRequestFilter {
         try {
             Optional<String> jwt = parseJwt(request);
             jwt.ifPresent(token -> setupAuthentication(token, request));
-        } catch (Exception e) {
-            log.error("Cannot set user authentication, ex={}", e.getMessage());
+        } catch (Exception ex) {
+            log.error("Cannot set user authentication, ex={}", ex.getMessage());
         }
 
         filterChain.doFilter(request, response);
@@ -39,11 +39,9 @@ public class AuthTokenFilter extends OncePerRequestFilter {
 
     private Optional<String> parseJwt(HttpServletRequest request) {
         String headerAuth = request.getHeader("Authorization");
-
         if (StringUtils.hasText(headerAuth) && headerAuth.startsWith("Bearer ")) {
             return Optional.of(headerAuth.split(" ")[1]);
         }
-
         return Optional.empty();
     }
 
