@@ -3,10 +3,10 @@ package com.storeum.auth;
 import com.storeum.exception.ResourceNotFoundException;
 import com.storeum.model.entity.Role;
 import com.storeum.model.entity.User;
-import com.storeum.repository.RoleRepository;
-import com.storeum.service.AuthService;
+import com.storeum.service.RoleService;
 import com.storeum.service.UserService;
 import lombok.RequiredArgsConstructor;
+import org.slf4j.MDC;
 import org.springframework.security.oauth2.client.userinfo.DefaultOAuth2UserService;
 import org.springframework.security.oauth2.client.userinfo.OAuth2UserRequest;
 import org.springframework.security.oauth2.core.OAuth2AuthenticationException;
@@ -22,7 +22,7 @@ import static com.storeum.model.entity.ERole.ROLE_USER;
 public class GoogleAuthService extends DefaultOAuth2UserService {
 
     private final UserService userService;
-    private final RoleRepository roleRepository;
+    private final RoleService roleService;
 
     @Override
     public OAuth2User loadUser(OAuth2UserRequest userRequest) throws OAuth2AuthenticationException {
@@ -32,23 +32,20 @@ public class GoogleAuthService extends DefaultOAuth2UserService {
         return user;
     }
 
+    //TODO: mb refactor
     private void googleOAuth(GoogleOAuthUser oAuthUser) {
         try {
             userService.getUserByEmail(oAuthUser.getEmail());
         } catch (ResourceNotFoundException ex) {
-            String errorMessage = String.format("Role with value=%s was not found in DB", ROLE_USER);
-            Role userRole = roleRepository.findByName(ROLE_USER)
-                    .orElseThrow(() -> new ResourceNotFoundException(errorMessage)
-                    );
-
+            Role userRole = roleService.getRoleByName(ROLE_USER);
             User user = User.builder()
                     .firstName(oAuthUser.getName())
                     .email(oAuthUser.getEmail())
                     .roles(Collections.singletonList(userRole))
                     .isEnabled(false)
                     .build();
-
-            userService.save(user);
+            MDC.put("userId", String.valueOf(user.getId()));
+            userService.createUser(user);
         }
     }
 

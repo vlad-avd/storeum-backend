@@ -2,13 +2,8 @@ package com.storeum.controller;
 
 import com.storeum.auth.CustomUserDetails;
 import com.storeum.model.entity.User;
-import com.storeum.payload.request.LoginRequest;
-import com.storeum.payload.request.LogoutRequest;
-import com.storeum.payload.request.RefreshTokenRequest;
-import com.storeum.payload.request.RegisterRequest;
-import com.storeum.payload.response.GenericResponse;
-import com.storeum.payload.response.JwtResponse;
-import com.storeum.payload.response.RefreshTokenResponse;
+import com.storeum.payload.request.*;
+import com.storeum.payload.response.*;
 import com.storeum.service.AuthService;
 import com.storeum.service.EmailConfirmationService;
 import com.storeum.util.Constants;
@@ -60,6 +55,12 @@ public class AuthController {
                                              @AuthenticationPrincipal CustomUserDetails user) {
         MDC.put("userId", String.valueOf(user.getId()));
         String response = authService.logout(request);
+        return ResponseEntity.ok(response);
+    }
+
+    @PostMapping("/exhange-oauth")
+    public ResponseEntity<JwtResponse> exchangeOAuthToken(@RequestBody OAuthTokenRequest request) {
+        JwtResponse response = authService.exchangeOAuthToken(request.getToken());
         return ResponseEntity.ok(response);
     }
 }

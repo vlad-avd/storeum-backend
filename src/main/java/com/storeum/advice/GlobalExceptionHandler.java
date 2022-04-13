@@ -1,8 +1,6 @@
 package com.storeum.advice;
 
-import com.storeum.exception.ResourceUnavailableException;
-import com.storeum.exception.ResourceNotFoundException;
-import com.storeum.exception.RefreshTokenException;
+import com.storeum.exception.*;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -20,7 +18,7 @@ public class GlobalExceptionHandler {
 
     @ExceptionHandler(value = RefreshTokenException.class)
     public ResponseEntity<ErrorResponse> handleTokenRefreshException(RefreshTokenException ex, WebRequest request) {
-        log.error("Error while refreshing token, ex={}", ex.getMessage());
+        log.error("Error occurred while refreshing token, ex={}", ex.getMessage());
         ErrorResponse response = buildErrorResponse(ex, HttpStatus.FORBIDDEN, request);
         return ResponseEntity
                 .status(HttpStatus.FORBIDDEN)
@@ -29,7 +27,7 @@ public class GlobalExceptionHandler {
 
     @ExceptionHandler(ResourceNotFoundException.class)
     public ResponseEntity<ErrorResponse> handleNotFoundException(ResourceNotFoundException ex, WebRequest request) {
-        log.error("Error while retrieving resource from DB, ex={}", ex.getMessage());
+        log.error("Error occurred while retrieving resource from DB, ex={}", ex.getMessage());
         ErrorResponse response = buildErrorResponse(ex, HttpStatus.NOT_FOUND, request);
         return ResponseEntity
                 .status(HttpStatus.NOT_FOUND)
@@ -38,7 +36,7 @@ public class GlobalExceptionHandler {
 
     @ExceptionHandler(UsernameNotFoundException.class)
     public ResponseEntity<ErrorResponse> handleNotFoundException(UsernameNotFoundException ex, WebRequest request) {
-        log.error("Error while retrieving user from DB, ex={}", ex.getMessage());
+        log.error("Error occurred while retrieving user from DB, ex={}", ex.getMessage());
         ErrorResponse response = buildErrorResponse(ex, HttpStatus.NOT_FOUND, request);
         return ResponseEntity
                 .status(HttpStatus.NOT_FOUND)
@@ -47,7 +45,7 @@ public class GlobalExceptionHandler {
 
     @ExceptionHandler(ResourceUnavailableException.class)
     public ResponseEntity<ErrorResponse> handleNotAvailableException(ResourceUnavailableException ex, WebRequest request) {
-        log.error("Error while retrieving title from url, ex={}", ex.getMessage());
+        log.error("Error occurred while retrieving title from url, ex={}", ex.getMessage());
         ErrorResponse response = buildErrorResponse(ex, HttpStatus.NOT_FOUND, request);
         return ResponseEntity
                 .status(HttpStatus.NOT_FOUND)
@@ -56,7 +54,7 @@ public class GlobalExceptionHandler {
 
     @ExceptionHandler(DisabledException.class)
     public ResponseEntity<ErrorResponse> handleUserUnconfirmedException(DisabledException ex, WebRequest request) {
-        log.error("Error when login into non confirmed account, ex={}", ex.getMessage());
+        log.error("Error occurred when login into non confirmed account, ex={}", ex.getMessage());
         ErrorResponse response = buildErrorResponse(ex, HttpStatus.NOT_FOUND, request);
         return ResponseEntity
                 .status(HttpStatus.NOT_FOUND)
@@ -65,7 +63,7 @@ public class GlobalExceptionHandler {
 
     @ExceptionHandler(Exception.class)
     public ResponseEntity<ErrorResponse> handleUnknownException(Exception ex, WebRequest request) {
-        log.error("Unknown exception, ex: ", ex);
+        log.error("Unknown error occurred, ex: ", ex);
         ErrorResponse response = buildErrorResponse(ex, HttpStatus.INTERNAL_SERVER_ERROR, request);
         return ResponseEntity
                 .status(HttpStatus.INTERNAL_SERVER_ERROR)

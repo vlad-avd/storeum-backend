@@ -19,6 +19,7 @@ import org.springframework.security.authentication.UsernamePasswordAuthenticatio
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -44,6 +45,7 @@ public class AuthService {
     private final UserValidator validator;
     private final EmailConfirmationService emailConfirmationService;
     private final MailService mailService;
+    private final OAuthExchangeTokenService oAuthExchangeTokenService;
 
     public JwtResponse auth(LoginRequest request) {
         log.info("Login request received for user with email={}", request.getEmail());
@@ -55,22 +57,7 @@ public class AuthService {
 
         MDC.put("userId", String.valueOf(userDetails.getId()));
 
-        List<String> roles = userDetails.getAuthorities().stream()
-                .map(GrantedAuthority::getAuthority)
-                .collect(Collectors.toList());
-
-        String jwt = jwtUtils.generateJwt(userDetails);
-        RefreshToken refreshToken = refreshTokenService.createRefreshToken(userDetails.getId());
-        log.info("Logged in successfully");
-
-        return JwtResponse.builder()
-                .accessToken(jwt)
-                .refreshToken(refreshToken.getToken())
-                .id(userDetails.getId())
-                .firstName(userDetails.getFirstName())
-                .email(userDetails.getEmail())
-                .roles(roles)
-                .build();
+        return buildJwtResponse(userDetails);
     }
 
     //TODO: does it work?
@@ -98,10 +85,9 @@ public class AuthService {
                 .isEnabled(false)
                 .build();
 
-        userService.save(user);
+        userService.createUser(user);
 
         MDC.put("userId", String.valueOf(user.getId()));
-        log.info("User was created, user={} ", user);
 
         EmailConfirmToken token = emailConfirmationService.createToken(user.getId());
         mailService.send(request.getEmail(), user.getFirstName(), token.getToken());
@@ -128,5 +114,34 @@ public class AuthService {
         refreshTokenService.deleteByUserId(request.getUserId());
         log.info("Logged out successfully");
         return "Log out successful";
+    }
+
+    //TODO: is need to setup authentication?
+    public JwtResponse exchangeOAuthToken(String token) {
+        OAuthExchangeToken oAuthExchangeToken = oAuthExchangeTokenService.exchangeToken(token);
+        User user = oAuthExchangeToken.getUser();
+        MDC.put("userId", String.valueOf(user.getId()));
+
+        CustomUserDetails userDetails = CustomUserDetails.build(user);
+        return buildJwtResponse(userDetails);
+    }
+
+    private JwtResponse buildJwtResponse(CustomUserDetails userDetails) {
+        List<String> roles = userDetails.getAuthorities().stream()
+                .map(GrantedAuthority::getAuthority)
+                .collect(Collectors.toList());
+
+        String jwt = jwtUtils.generateJwt(userDetails);
+        RefreshToken refreshToken = refreshTokenService.createRefreshToken(userDetails.getId());
+        log.info("Logged in successfully");
+
+        return JwtResponse.builder()
+                .accessToken(jwt)
+                .refreshToken(refreshToken.getToken())
+                .id(userDetails.getId())
+                .firstName(userDetails.getFirstName())
+                .email(userDetails.getEmail())
+                .roles(roles)
+                .build();
     }
 }

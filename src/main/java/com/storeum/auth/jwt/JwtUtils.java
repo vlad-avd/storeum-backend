@@ -20,7 +20,7 @@ public class JwtUtils {
 
     public String generateJwt(CustomUserDetails customUserDetails) {
         String jwt = generateTokenFromEmail(customUserDetails.getEmail());
-        log.info("Access token was generated");
+        log.info("Generated access token");
         return jwt;
     }
 

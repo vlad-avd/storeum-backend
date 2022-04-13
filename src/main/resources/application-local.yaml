@@ -49,7 +49,7 @@ app:
   jwt-secret: jwt-secret
   jwt-expiration-ms: 3600000
   jwt-refresh-expiration-ms: 86400000
-  client-base-uri: http://localhost:3000
+  client-base-url: http://localhost:3000
 
 #debug: true
 #logging:

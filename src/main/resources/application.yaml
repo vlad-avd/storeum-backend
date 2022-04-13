@@ -49,7 +49,7 @@ app:
   jwt-secret: ${STOREUM_JWT_SECRET}
   jwt-expiration-ms: ${STOREUM_JWT_EXPIRE_TIME}
   jwt-refresh-expiration-ms: ${STOREUM_JWT_REFRESH_EXPIRE_TIME}
-  client-base-uri: http://localhost:3000
+  client-base-url: http://localhost:3000
 
 #debug: true
 #logging:

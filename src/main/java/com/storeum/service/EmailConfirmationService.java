@@ -2,12 +2,12 @@ package com.storeum.service;
 
 import com.storeum.exception.ResourceNotFoundException;
 import com.storeum.model.ValidationResult;
+import com.storeum.model.ValidationStatus;
 import com.storeum.model.entity.EmailConfirmToken;
 import com.storeum.model.entity.User;
 import com.storeum.payload.response.GenericResponse;
 import com.storeum.repository.EmailConfirmTokenRepository;
 import com.storeum.validator.EmailConfirmationValidator;
-import com.storeum.model.ValidationStatus;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
@@ -60,7 +60,7 @@ public class EmailConfirmationService {
         tokenRepository.save(tokenEntity);
         User user = tokenEntity.getUser();
         user.setEnabled(true);
-        userService.save(user);
+        userService.createUser(user);
         log.info("Email was confirmed, tokenEntity={} ", tokenEntity);
 
         return new GenericResponse<>("Email successfully confirmed", HttpStatus.OK);
