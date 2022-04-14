@@ -19,10 +19,10 @@ public class FolderService {
     private final FolderRepository folderRepository;
     private final UserService userService;
 
-    public Folder getFolderById(Long id) {
-        log.info("Trying to get folder, id={}", id);
-        return folderRepository.findById(id).orElseThrow(
-                () -> new ResourceNotFoundException(String.format("Folder with id=%s was not found in DB", id))
+    public Folder getFolder(Long folderId, Long userId) {
+        log.info("Trying to get folder, id={}", folderId);
+        return folderRepository.findByIdAndUserId(folderId, userId).orElseThrow(
+                () -> new ResourceNotFoundException(String.format("Folder with id=%s was not found in DB", folderId))
         );
     }
 
@@ -38,7 +38,7 @@ public class FolderService {
 
         Folder folder = new Folder();
         if (request.getParentFolderId() != null) {
-            folder.setParentFolder(getFolderById(request.getParentFolderId()));
+            folder.setParentFolder(getFolder(request.getParentFolderId(), userId));
         }
         folder.setUser(userService.getUserById(userId));
         folder.setTitle(request.getTitle());
@@ -53,8 +53,9 @@ public class FolderService {
                 folderId,
                 request.getTitle(),
                 request.getParentFolderId());
-        Folder folder = getFolderById(folderId);
-        Folder parentFolder = getFolderById(request.getParentFolderId());
+        //TODO;
+        Folder folder = getFolder(folderId, 1L);
+        Folder parentFolder = getFolder(request.getParentFolderId(), 1L);
 
         folder.setTitle(request.getTitle());
         folder.setParentFolder(parentFolder);

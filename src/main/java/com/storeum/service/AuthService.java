@@ -8,7 +8,6 @@ import com.storeum.model.ValidationResult;
 import com.storeum.model.entity.*;
 import com.storeum.payload.request.*;
 import com.storeum.payload.response.*;
-import com.storeum.repository.RoleRepository;
 import com.storeum.validator.UserValidator;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -19,7 +18,6 @@ import org.springframework.security.authentication.UsernamePasswordAuthenticatio
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -38,7 +36,7 @@ public class AuthService {
 
     private final AuthenticationManager authenticationManager;
     private final UserService userService;
-    private final RoleRepository roleRepository;
+    private final RoleService roleService;
     private final PasswordEncoder encoder;
     private final JwtUtils jwtUtils;
     private final RefreshTokenService refreshTokenService;
@@ -71,11 +69,7 @@ public class AuthService {
             return new GenericResponse<>(validationResult.getErrorMessage());
         }
 
-        String errorMessage = String.format("Role with value=%s was not found in DB", ROLE_USER);
-        Role userRole = roleRepository.findByName(ROLE_USER)
-                .orElseThrow(() -> new ResourceNotFoundException(errorMessage)
-                );
-
+        Role userRole = roleService.getRoleByName(ROLE_USER);
         String encodedPwd = encoder.encode(request.getPassword());
         User user = User.builder()
                 .firstName(request.getFirstName())
@@ -99,7 +93,7 @@ public class AuthService {
         String requestRefreshToken = request.getRefreshToken();
         log.info("Refresh token request received for token={}", requestRefreshToken);
 
-        return refreshTokenService.findByToken(requestRefreshToken)
+        return refreshTokenService.getRefreshToken(requestRefreshToken)
                 .map(refreshTokenService::verifyExpiration)
                 .map(RefreshToken::getUser)
                 .map(user -> {
@@ -107,7 +101,10 @@ public class AuthService {
                     log.info("Token was refreshed successfully");
                     return new RefreshTokenResponse(token, requestRefreshToken);
                 })
-                .orElseThrow(() -> new RefreshTokenException(requestRefreshToken, "Refresh token is not in database"));
+                .orElseThrow(
+                        () -> new ResourceNotFoundException(String.format("Refresh token was not found for token=%s",
+                                requestRefreshToken))
+                );
     }
 
     public String logout(LogoutRequest request) {
@@ -116,13 +113,17 @@ public class AuthService {
         return "Log out successful";
     }
 
-    //TODO: is need to setup authentication?
+    //TODO: check auth set up
     public JwtResponse exchangeOAuthToken(String token) {
         OAuthExchangeToken oAuthExchangeToken = oAuthExchangeTokenService.exchangeToken(token);
         User user = oAuthExchangeToken.getUser();
         MDC.put("userId", String.valueOf(user.getId()));
 
         CustomUserDetails userDetails = CustomUserDetails.build(user);
+        Authentication authentication =
+                new UsernamePasswordAuthenticationToken(userDetails, null, userDetails.getAuthorities());
+        SecurityContextHolder.getContext().setAuthentication(authentication);
+
         return buildJwtResponse(userDetails);
     }
 

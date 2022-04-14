@@ -29,7 +29,7 @@ public class UserController {
     }
 
     @PostMapping("/{id}")
-    public ResponseEntity<User> editUser(@Valid @RequestBody EditProfileRequest request, @PathVariable Long id) {
+    public ResponseEntity<User> editUser(@RequestBody EditProfileRequest request, @PathVariable Long id) {
         MDC.put("userId", String.valueOf(id));
         return ResponseEntity.ok(userService.editProfile(request, id));
     }

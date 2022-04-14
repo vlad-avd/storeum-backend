@@ -33,6 +33,7 @@ public class MailService {
         }
     }
 
+    //TODO: modify email body & extract to file
     private String buildEmailBody(String firstName, String token) {
         String url = String.format("%s%s/auth/confirm?token=%s", Constants.HOST, Constants.BASE_URL, token);
         return """

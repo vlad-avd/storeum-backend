@@ -26,8 +26,8 @@ import static com.storeum.util.Constants.BASE_URL;
 @RequiredArgsConstructor
 //TODO: cleanup or uncomment below annotation params
 @EnableGlobalMethodSecurity(
-         securedEnabled = true,
-         jsr250Enabled = true,
+        securedEnabled = true,
+        jsr250Enabled = true,
         prePostEnabled = true)
 public class SecurityConfig extends WebSecurityConfigurerAdapter implements WebMvcConfigurer {
 
@@ -37,6 +37,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter implements WebM
     private final GoogleAuthService oauthService;
     private final OAuthSuccessHandler oAuthSuccessHandler;
     private final OAuthFailureHandler oAuthFailureHandler;
+    private final ForbiddenHandler forbiddenHandler;
 
     @Bean
     public AuthTokenFilter authenticationJwtTokenFilter() {
@@ -66,7 +67,10 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter implements WebM
                 .and()
                 .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS)
                 .and()
-                .authorizeRequests().antMatchers(new String[]{
+                .authorizeRequests()
+                .antMatchers(BASE_URL + "/users/{userId}/**")
+                .access("@accessChecker.hasUserId(authentication,#userId)")
+                .antMatchers(new String[]{
                         BASE_URL + "/auth/login",
                         BASE_URL + "/auth/register",
                         BASE_URL + "/auth/refresh-token",
@@ -82,7 +86,9 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter implements WebM
                 .userInfoEndpoint().userService(oauthService)
                 .and()
                 .successHandler(oAuthSuccessHandler)
-                .failureHandler(oAuthFailureHandler);
+                .failureHandler(oAuthFailureHandler)
+                .and()
+                .exceptionHandling().accessDeniedHandler(forbiddenHandler);
 
         http.addFilterBefore(authenticationJwtTokenFilter(), UsernamePasswordAuthenticationFilter.class);
     }

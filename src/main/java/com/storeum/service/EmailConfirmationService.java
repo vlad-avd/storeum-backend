@@ -41,9 +41,9 @@ public class EmailConfirmationService {
                 .expiresAt(LocalDateTime.now().plusMinutes(15))
                 .isConfirmed(false)
                 .build();
+        EmailConfirmToken createdToken = tokenRepository.save(token);
         log.info("Email confirmation token successfully created");
-
-        return tokenRepository.save(token);
+        return createdToken;
     }
 
     @Transactional

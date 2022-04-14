@@ -13,8 +13,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
-import javax.validation.Valid;
-
 @CrossOrigin(origins = "*", maxAge = 3600)
 @RestController
 @RequestMapping(Constants.BASE_URL + "/auth")
@@ -25,13 +23,13 @@ public class AuthController {
     private final EmailConfirmationService emailConfirmationService;
 
     @PostMapping("/login")
-    public ResponseEntity<JwtResponse> authenticateUser(@Valid @RequestBody LoginRequest request) {
+    public ResponseEntity<JwtResponse> authenticateUser(@RequestBody LoginRequest request) {
         JwtResponse response = authService.auth(request);
         return ResponseEntity.ok(response);
     }
 
     @PostMapping("/register")
-    public ResponseEntity<?> registerUser(@Valid @RequestBody RegisterRequest request) {
+    public ResponseEntity<?> registerUser(@RequestBody RegisterRequest request) {
         GenericResponse<User> response = authService.register(request);
         return response.buildResponseEntity();
     }
@@ -43,7 +41,7 @@ public class AuthController {
     }
 
     @PostMapping("/refresh-token")
-    public ResponseEntity<RefreshTokenResponse> refreshToken(@Valid @RequestBody RefreshTokenRequest request,
+    public ResponseEntity<RefreshTokenResponse> refreshToken(@RequestBody RefreshTokenRequest request,
                                                              @AuthenticationPrincipal CustomUserDetails user) {
         MDC.put("userId", String.valueOf(user.getId()));
         RefreshTokenResponse response = authService.refreshToken(request);
@@ -51,7 +49,7 @@ public class AuthController {
     }
 
     @PostMapping("/logout")
-    public ResponseEntity<String> logoutUser(@Valid @RequestBody LogoutRequest request,
+    public ResponseEntity<String> logoutUser(@RequestBody LogoutRequest request,
                                              @AuthenticationPrincipal CustomUserDetails user) {
         MDC.put("userId", String.valueOf(user.getId()));
         String response = authService.logout(request);

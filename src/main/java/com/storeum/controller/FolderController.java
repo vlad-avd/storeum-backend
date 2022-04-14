@@ -10,7 +10,6 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import javax.validation.Valid;
 import java.util.List;
 
 import static com.storeum.util.Constants.BASE_URL;
@@ -26,7 +25,8 @@ public class FolderController {
     @GetMapping("/users/{userId}/folders/{folderId}")
     public ResponseEntity<Folder> getFolder(@PathVariable Long userId, @PathVariable Long folderId) {
         MDC.put("userId", String.valueOf(userId));
-        return ResponseEntity.ok(folderService.getFolderById(folderId));
+        Folder folder = folderService.getFolder(folderId, userId);
+        return ResponseEntity.ok(folder);
     }
 
     @GetMapping("/users/{userId}/folders")
@@ -36,7 +36,7 @@ public class FolderController {
     }
 
     @PostMapping("/users/{userId}/folders")
-    public ResponseEntity<Folder> createFolder(@Valid @RequestBody CreateFolderRequest request,
+    public ResponseEntity<Folder> createFolder(@RequestBody CreateFolderRequest request,
                                                @PathVariable Long userId) {
         MDC.put("userId", String.valueOf(userId));
         Folder folder = folderService.createFolder(request, userId);
@@ -48,12 +48,14 @@ public class FolderController {
                                              @PathVariable Long userId,
                                              @PathVariable Long folderId) {
         MDC.put("userId", String.valueOf(userId));
-        return ResponseEntity.ok(folderService.editFolder(request, folderId));
+        Folder folder = folderService.editFolder(request, folderId);
+        return ResponseEntity.ok(folder);
     }
 
     @DeleteMapping("/users/{userId}/folders/{folderId}")
     public ResponseEntity<String> deleteFolder(@PathVariable Long userId, @PathVariable Long folderId) {
         MDC.put("userId", String.valueOf(userId));
-        return ResponseEntity.ok(folderService.deleteFolder(folderId));
+        String response = folderService.deleteFolder(folderId);
+        return ResponseEntity.ok(response);
     }
 }

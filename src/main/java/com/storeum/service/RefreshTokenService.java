@@ -24,7 +24,7 @@ public class RefreshTokenService {
     @Value("${app.jwt-refresh-expiration-ms}")
     private Long refreshTokenDurationMs;
 
-    public Optional<RefreshToken> findByToken(String token) {
+    public Optional<RefreshToken> getRefreshToken(String token) {
         log.info("Trying to get refresh token");
         return refreshTokenRepository.findByToken(token);
     }

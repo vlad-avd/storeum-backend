@@ -38,6 +38,9 @@ public class Folder {
     @ToString.Exclude
     private List<Folder> subFolders = new ArrayList<>();
 
+    @OneToMany(mappedBy = "folder", cascade = CascadeType.ALL, orphanRemoval = true)
+    @JsonIncludeProperties({"id", "title"})
+    private List<Tag> tags;
     @ManyToOne
     @JsonIgnore
     private User user;

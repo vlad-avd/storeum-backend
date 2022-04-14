@@ -64,7 +64,7 @@ public class NoteService {
                 .title(noteTitle)
                 .description(request.getDescription())
                 .link(request.getLink())
-                .folder(folderService.getFolderById(folderId))
+                .folder(folderService.getFolder(folderId, userId))
                 .user(userService.getUserById(userId))
                 .createdAt(LocalDateTime.now())
                 .updatedAt(LocalDateTime.now())

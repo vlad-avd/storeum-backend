@@ -6,6 +6,7 @@ import lombok.*;
 
 import javax.persistence.*;
 import java.time.LocalDateTime;
+import java.util.List;
 
 @Entity
 @Table(name = "note")
@@ -34,6 +35,10 @@ public class Note {
     @ManyToOne
     @JsonIgnore
     private User user;
+
+    @OneToMany(mappedBy = "note", cascade = CascadeType.ALL, orphanRemoval = true)
+    @JsonIncludeProperties({"id", "title"})
+    private List<Tag> tags;
 
     private LocalDateTime createdAt;
 

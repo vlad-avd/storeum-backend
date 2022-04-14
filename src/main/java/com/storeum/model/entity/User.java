@@ -4,7 +4,6 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.*;
 
 import javax.persistence.*;
-import javax.validation.constraints.*;
 import java.util.List;
 
 @Entity
@@ -23,17 +22,10 @@ public class User {
     @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "u_seq")
     private Long id;
 
-    @NotBlank
-    @Size(max = 20)
     private String firstName;
 
-    @NotBlank
-    @Size(max = 50)
-    @Email
     private String email;
 
-//    @NotBlank
-    @Size(max = 120)
     @JsonIgnore
     private String password;
 
