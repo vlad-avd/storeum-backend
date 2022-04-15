@@ -57,9 +57,8 @@ public class AuthService {
         return buildJwtResponse(userDetails);
     }
 
-    //TODO: does it work?
     @Transactional
-    public GenericResponse<User> register(RegisterRequest request) {
+    public GenericResponse<User> register(RegisterRequest request) throws Exception {
         log.info("Register request received for user with email={}", request.getEmail());
 
         ValidationResult validationResult = validator.validateRegisterRequest(request);
@@ -113,9 +112,12 @@ public class AuthService {
     }
 
     //TODO: check auth set up
+    @Transactional
     public JwtResponse exchangeOAuthToken(String token) {
         OAuthExchangeToken oAuthExchangeToken = oAuthExchangeTokenService.exchangeToken(token);
         User user = oAuthExchangeToken.getUser();
+        user.setEnabled(true);
+        userService.save(user);
         MDC.put("userId", String.valueOf(user.getId()));
 
         CustomUserDetails userDetails = CustomUserDetails.build(user);

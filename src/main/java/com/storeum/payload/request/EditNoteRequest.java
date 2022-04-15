@@ -2,7 +2,7 @@ package com.storeum.payload.request;
 
 import lombok.Getter;
 
-import java.util.Map;
+import java.util.List;
 
 @Getter
 public class EditNoteRequest {
@@ -10,5 +10,6 @@ public class EditNoteRequest {
     private String title;
     private String description;
     private String link;
-    private Map<String, String> tagTitleAction;
+    private List<Long> tagIdsToRemove;
+    private List<String> tagTitlesToCreate;
 }

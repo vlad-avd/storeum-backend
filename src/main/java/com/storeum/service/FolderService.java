@@ -38,7 +38,8 @@ public class FolderService {
 
         Folder folder = new Folder();
         if (request.getParentFolderId() != null) {
-            folder.setParentFolder(getFolder(request.getParentFolderId(), userId));
+            Folder parentFolder = getFolder(request.getParentFolderId(), userId);
+            folder.setParentFolder(parentFolder);
         }
         folder.setUser(userService.getUserById(userId));
         folder.setTitle(request.getTitle());
@@ -48,14 +49,14 @@ public class FolderService {
         return createdFolder;
     }
 
-    public Folder editFolder(EditFolderRequest request, Long folderId) {
+    public Folder editFolder(EditFolderRequest request, Long folderId, Long userId) {
         log.info("Edit folder request received, folderId={}, title={}, parentFolderId={}",
                 folderId,
                 request.getTitle(),
                 request.getParentFolderId());
-        //TODO;
-        Folder folder = getFolder(folderId, 1L);
-        Folder parentFolder = getFolder(request.getParentFolderId(), 1L);
+
+        Folder folder = getFolder(folderId, userId);
+        Folder parentFolder = getFolder(request.getParentFolderId(), userId);
 
         folder.setTitle(request.getTitle());
         folder.setParentFolder(parentFolder);
@@ -65,10 +66,10 @@ public class FolderService {
         return editedFolder;
     }
 
-    public String deleteFolder(Long folderId) {
+    public String deleteFolder(Long folderId, Long userId) {
         log.info("Trying to delete folder, id={}", folderId);
-        folderRepository.deleteById(folderId);
+        folderRepository.deleteByIdAndUserId(folderId, userId);
         log.info("Folder successfully deleted, id={}", folderId);
-        return "Folder successfully deleted, id=" + folderId;
+        return String.format("Folder successfully deleted, id=%s", folderId);
     }
 }

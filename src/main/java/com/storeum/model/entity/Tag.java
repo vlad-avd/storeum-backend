@@ -22,7 +22,7 @@ public class Tag {
 
     private String title;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JsonIgnore
     private Note note;
 

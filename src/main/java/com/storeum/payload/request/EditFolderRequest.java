@@ -7,7 +7,6 @@ import javax.validation.constraints.NotBlank;
 @Getter
 public class EditFolderRequest {
 
-    @NotBlank
     private String title;
     private Long parentFolderId;
 }

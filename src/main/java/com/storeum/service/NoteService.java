@@ -2,7 +2,7 @@ package com.storeum.service;
 
 import com.storeum.exception.ResourceNotFoundException;
 import com.storeum.model.ValidationResult;
-import com.storeum.model.entity.Note;
+import com.storeum.model.entity.*;
 import com.storeum.payload.request.CreateNoteRequest;
 import com.storeum.payload.request.EditNoteRequest;
 import com.storeum.payload.response.GenericResponse;
@@ -14,6 +14,7 @@ import org.apache.logging.log4j.util.Strings;
 import org.springframework.data.domain.*;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -32,19 +33,20 @@ public class NoteService {
     private final UrlTitleExtractor titleExtractor;
     private final TagService tagService;
 
-    public Note getNoteById(Long id) {
-        log.info("Trying to get note, id={}", id);
-        return noteRepository.findById(id).orElseThrow(
-                () -> new ResourceNotFoundException(String.format("Note with id=%s was not found in DB", id))
+    public Note getNote(Long noteId, Long folderId, Long userId) {
+        log.info("Trying to get note, id={}", noteId);
+        return noteRepository.findByIdAndFolderIdAndUserId(noteId, folderId, userId).orElseThrow(
+                () -> new ResourceNotFoundException(String.format("Note with id=%s was not found in DB", noteId))
         );
     }
 
-    public List<Note> getFolderNotes(Long folderId, Integer pageNumber) {
+    public List<Note> getFolderNotes(Long folderId, Long userId, Integer pageNumber) {
         log.info("Trying to get folder notes, folderId={}", folderId);
         Pageable page = PageRequest.of(pageNumber, 12, Sort.by("createdAt").descending());
-        return noteRepository.findNotesByFolderId(folderId, page);
+        return noteRepository.findNotesByFolderIdAndUserId(folderId, userId, page);
     }
 
+    @Transactional
     public GenericResponse<Note> createNote(CreateNoteRequest request, Long userId, Long folderId) {
         log.info("Create note request received, title={}, description={}, link={}",
                 request.getTitle(),
@@ -61,41 +63,51 @@ public class NoteService {
                 ? request.getTitle()
                 : titleExtractor.extract(request.getLink());
 
+        Folder folder = folderService.getFolder(folderId, userId);
+        User user = userService.getUserById(userId);
         Note note = Note.builder()
                 .title(noteTitle)
                 .description(request.getDescription())
                 .link(request.getLink())
-                .folder(folderService.getFolder(folderId, userId))
-                .user(userService.getUserById(userId))
+                .folder(folder)
+                .user(user)
                 .createdAt(LocalDateTime.now())
                 .updatedAt(LocalDateTime.now())
                 .build();
-
         Note createdNote = noteRepository.save(note);
-        log.info("Note was created, note={} ", createdNote);
+        tagService.createTags(request.getTags(), note);
+
+        log.info("Note with id={} was created", createdNote.getId());
+
         return new GenericResponse<>(createdNote, HttpStatus.CREATED);
     }
 
-    public Note editNote(EditNoteRequest request, Long noteId) {
-        log.info("Edit note request received, noteId={}, title={}, description={}, link={}",
-                noteId,
-                request.getTitle(),
-                request.getDescription(),
-                request.getLink());
-        Note note = getNoteById(noteId);
+    @Transactional
+    public Note editNote(EditNoteRequest request, Long noteId, Long folderId, Long userId) {
+        log.info("Edit note request received, noteId={}, title={}", noteId, request.getTitle());
+        Note note = getNote(noteId, folderId, userId);
         note.setTitle(request.getTitle());
         note.setDescription(request.getDescription());
         note.setLink(request.getLink());
         note.setUpdatedAt(LocalDateTime.now());
 
+        List<Tag> removedTags = note.getTags().stream()
+                .filter(tag -> !request.getTagIdsToRemove().contains(tag.getId()))
+                .toList();
+        note.getTags().clear();
+        note.getTags().addAll(removedTags);
         Note editedNote = noteRepository.save(note);
         log.info("Note was successfully edited, note={}", editedNote);
-        return note;
+
+        tagService.createTags(request.getTagTitlesToCreate(), editedNote);
+
+        return editedNote;
     }
 
-    public String deleteNote(Long noteId) {
+    @Transactional
+    public String deleteNote(Long noteId, Long folderId, Long userId) {
         log.info("Trying to delete note, id={}", noteId);
-        noteRepository.deleteById(noteId);
+        noteRepository.deleteByIdAndFolderIdAndUserId(noteId, folderId, userId);
         return String.format("Note successfully deleted, id=%s", noteId);
     }
 }

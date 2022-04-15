@@ -32,7 +32,6 @@ public class GoogleAuthService extends DefaultOAuth2UserService {
         return user;
     }
 
-    //TODO: mb refactor
     private void googleOAuth(GoogleOAuthUser oAuthUser) {
         try {
             userService.getUserByEmail(oAuthUser.getEmail());

@@ -7,7 +7,6 @@ import com.storeum.payload.response.GenericResponse;
 import com.storeum.service.NoteService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.slf4j.MDC;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -28,15 +27,13 @@ public class NoteController {
     public List<Note> getFolderNotes(@PathVariable Long userId,
                                      @PathVariable Long folderId,
                                      @RequestParam("page") Integer pageNumber) {
-        MDC.put("userId", String.valueOf(userId));
-        return noteService.getFolderNotes(folderId, pageNumber);
+        return noteService.getFolderNotes(folderId, userId, pageNumber);
     }
 
     @PostMapping("/users/{userId}/folders/{folderId}/notes")
     public ResponseEntity<?> createNote(@RequestBody CreateNoteRequest request,
                                         @PathVariable Long userId,
                                         @PathVariable Long folderId) {
-        MDC.put("userId", String.valueOf(userId));
         GenericResponse<Note> response = noteService.createNote(request, userId, folderId);
         return response.buildResponseEntity();
     }
@@ -44,15 +41,15 @@ public class NoteController {
     @PostMapping("/users/{userId}/folders/{folderId}/notes/{noteId}")
     public ResponseEntity<Note> editNote(@RequestBody EditNoteRequest request,
                                          @PathVariable Long userId,
+                                         @PathVariable Long folderId,
                                          @PathVariable Long noteId) {
-        MDC.put("userId", String.valueOf(userId));
-        return ResponseEntity.ok(noteService.editNote(request, noteId));
+        return ResponseEntity.ok(noteService.editNote(request, noteId, folderId, userId));
     }
 
     @DeleteMapping("/users/{userId}/folders/{folderId}/notes/{noteId}")
     public ResponseEntity<String> deleteNote(@PathVariable Long userId,
+                                             @PathVariable Long folderId,
                                              @PathVariable Long noteId) {
-        MDC.put("userId", String.valueOf(userId));
-        return ResponseEntity.ok(noteService.deleteNote(noteId));
+        return ResponseEntity.ok(noteService.deleteNote(noteId, folderId, userId));
     }
 }

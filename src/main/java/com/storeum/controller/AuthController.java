@@ -29,7 +29,7 @@ public class AuthController {
     }
 
     @PostMapping("/register")
-    public ResponseEntity<?> registerUser(@RequestBody RegisterRequest request) {
+    public ResponseEntity<?> registerUser(@RequestBody RegisterRequest request) throws Exception {
         GenericResponse<User> response = authService.register(request);
         return response.buildResponseEntity();
     }
@@ -55,7 +55,7 @@ public class AuthController {
         return ResponseEntity.ok(response);
     }
 
-    @GetMapping("/exhange-oauth")
+    @GetMapping("/exchange-oauth")
     public ResponseEntity<JwtResponse> exchangeOAuthToken(@RequestParam String token) {
         JwtResponse response = authService.exchangeOAuthToken(token);
         return ResponseEntity.ok(response);

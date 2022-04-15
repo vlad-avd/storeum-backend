@@ -5,7 +5,6 @@ import com.storeum.payload.request.CreateFolderRequest;
 import com.storeum.payload.request.EditFolderRequest;
 import com.storeum.service.FolderService;
 import lombok.RequiredArgsConstructor;
-import org.slf4j.MDC;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -24,14 +23,12 @@ public class FolderController {
 
     @GetMapping("/users/{userId}/folders")
     public List<Folder> getUserFolders(@PathVariable Long userId) {
-        MDC.put("userId", String.valueOf(userId));
         return folderService.getUserFolders(userId);
     }
 
     @PostMapping("/users/{userId}/folders")
     public ResponseEntity<Folder> createFolder(@RequestBody CreateFolderRequest request,
                                                @PathVariable Long userId) {
-        MDC.put("userId", String.valueOf(userId));
         Folder folder = folderService.createFolder(request, userId);
         return ResponseEntity.status(HttpStatus.CREATED).body(folder);
     }
@@ -40,15 +37,13 @@ public class FolderController {
     public ResponseEntity<Folder> editFolder(@RequestBody EditFolderRequest request,
                                              @PathVariable Long userId,
                                              @PathVariable Long folderId) {
-        MDC.put("userId", String.valueOf(userId));
-        Folder folder = folderService.editFolder(request, folderId);
+        Folder folder = folderService.editFolder(request, folderId, userId);
         return ResponseEntity.ok(folder);
     }
 
     @DeleteMapping("/users/{userId}/folders/{folderId}")
     public ResponseEntity<String> deleteFolder(@PathVariable Long userId, @PathVariable Long folderId) {
-        MDC.put("userId", String.valueOf(userId));
-        String response = folderService.deleteFolder(folderId);
+        String response = folderService.deleteFolder(folderId, userId);
         return ResponseEntity.ok(response);
     }
 }
