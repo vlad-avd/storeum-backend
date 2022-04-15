@@ -2,7 +2,6 @@ package com.storeum.service;
 
 import com.storeum.auth.CustomUserDetails;
 import com.storeum.auth.jwt.JwtUtils;
-import com.storeum.exception.RefreshTokenException;
 import com.storeum.exception.ResourceNotFoundException;
 import com.storeum.model.ValidationResult;
 import com.storeum.model.entity.*;
@@ -79,7 +78,7 @@ public class AuthService {
                 .isEnabled(false)
                 .build();
 
-        userService.createUser(user);
+        userService.save(user);
 
         MDC.put("userId", String.valueOf(user.getId()));
 
@@ -128,10 +127,6 @@ public class AuthService {
     }
 
     private JwtResponse buildJwtResponse(CustomUserDetails userDetails) {
-        List<String> roles = userDetails.getAuthorities().stream()
-                .map(GrantedAuthority::getAuthority)
-                .collect(Collectors.toList());
-
         String jwt = jwtUtils.generateJwt(userDetails);
         RefreshToken refreshToken = refreshTokenService.createRefreshToken(userDetails.getId());
         log.info("Logged in successfully");
@@ -142,7 +137,6 @@ public class AuthService {
                 .id(userDetails.getId())
                 .firstName(userDetails.getFirstName())
                 .email(userDetails.getEmail())
-                .roles(roles)
                 .build();
     }
 }

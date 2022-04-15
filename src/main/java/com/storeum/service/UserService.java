@@ -2,8 +2,6 @@ package com.storeum.service;
 
 import com.storeum.exception.ResourceNotFoundException;
 import com.storeum.model.entity.User;
-import com.storeum.payload.request.EditProfileRequest;
-import com.storeum.repository.RoleRepository;
 import com.storeum.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -15,7 +13,6 @@ import org.springframework.stereotype.Service;
 public class UserService {
 
     private final UserRepository userRepository;
-    private final RoleRepository roleRepository;
 
     public User getUserById(Long id) {
         log.info("Trying to get user, id={}", id);
@@ -31,20 +28,8 @@ public class UserService {
         );
     }
 
-    public User editProfile(EditProfileRequest request, Long userId) {
-        log.info("Edit profile request received");
-        User user = getUserById(userId);
-        user.setFirstName(request.getFirstName());
-        user.setEmail(request.getEmail());
-
-        User editedUser = userRepository.save(user);
-        log.info("User profile was successfully edited, user={}", editedUser);
-        return editedUser;
-    }
-
-    public User createUser(User user) {
-        User createdUser = userRepository.save(user);
+    public void save(User user) {
+        userRepository.save(user);
         log.info("User was created, user={} ", user);
-        return createdUser;
     }
 }

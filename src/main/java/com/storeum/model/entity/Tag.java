@@ -33,4 +33,12 @@ public class Tag {
     @ManyToOne(fetch = FetchType.LAZY)
     @JsonIgnore
     private User user;
+
+    @Override
+    public String toString() {
+        return "Tag{" +
+                "id=" + id +
+                ", title='" + title + '\'' +
+                '}';
+    }
 }

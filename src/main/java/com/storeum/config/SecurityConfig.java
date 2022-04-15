@@ -74,6 +74,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter implements WebM
                         BASE_URL + "/auth/login",
                         BASE_URL + "/auth/register",
                         BASE_URL + "/auth/refresh-token",
+                        BASE_URL + "/auth/exchange-oauth",
                         BASE_URL + "/auth/confirm",
                         BASE_URL + "/oauth2/**",
                 }).permitAll().anyRequest().authenticated()

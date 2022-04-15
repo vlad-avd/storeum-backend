@@ -12,13 +12,13 @@ import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.Size;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Entity
 @Table(name = "folder")
 @Getter
 @Setter
 @NoArgsConstructor
-@ToString
 public class Folder {
 
     @Id
@@ -26,16 +26,14 @@ public class Folder {
     @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "f_seq")
     private Long id;
 
-    @NotBlank
-    @Size(max = 30)
     private String title;
 
     @ManyToOne
-    @JsonIncludeProperties({"id"})
+//    @JsonIncludeProperties({"id"})
+    @JsonIgnore
     private Folder parentFolder;
 
     @OneToMany(mappedBy = "parentFolder", cascade = CascadeType.ALL, orphanRemoval = true)
-    @ToString.Exclude
     private List<Folder> subFolders = new ArrayList<>();
 
     @OneToMany(mappedBy = "folder", cascade = CascadeType.ALL, orphanRemoval = true)
@@ -44,4 +42,13 @@ public class Folder {
     @ManyToOne
     @JsonIgnore
     private User user;
+
+    @Override
+    public String toString() {
+        return "Folder{" +
+                "id=" + id +
+                ", title='" + title + '\'' +
+                ", tags=[" + tags.stream().map(Tag::getTitle).collect(Collectors.joining(", ")) + "]" +
+                '}';
+    }
 }

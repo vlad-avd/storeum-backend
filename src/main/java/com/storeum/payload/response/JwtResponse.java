@@ -14,5 +14,4 @@ public class JwtResponse {
     private Long id;
     private String firstName;
     private String email;
-    private List<String> roles;
 }

@@ -24,13 +24,6 @@ public class NoteController {
 
     private final NoteService noteService;
 
-    @GetMapping("/users/{userId}/folders/{folderId}/notes/{noteId}")
-    public ResponseEntity<Note> getNote(@PathVariable Long userId,
-                                        @PathVariable Long noteId) {
-        MDC.put("userId", String.valueOf(userId));
-        return ResponseEntity.ok(noteService.getNoteById(noteId));
-    }
-
     @GetMapping("/users/{userId}/folders/{folderId}/notes")
     public List<Note> getFolderNotes(@PathVariable Long userId,
                                      @PathVariable Long folderId,

@@ -45,7 +45,7 @@ public class GoogleAuthService extends DefaultOAuth2UserService {
                     .isEnabled(false)
                     .build();
             MDC.put("userId", String.valueOf(user.getId()));
-            userService.createUser(user);
+            userService.save(user);
         }
     }
 

@@ -12,16 +12,13 @@ import org.springframework.stereotype.Service;
 public class TagService {
 
     private final TagRepository repository;
-    private final UserService userService;
-    private final FolderService folderService;
-    private final NoteService noteService;
 
     public Tag createTag(String title, Long userId, Long folderId, Long noteId) {
         Tag tag = Tag.builder()
                 .title(title)
-                .user(userService.getUserById(userId))
-                .folder(folderService.getFolder(folderId, userId))
-                .note(noteService.getNoteById(noteId))
+//                .user(userService.getUserById(userId))
+//                .folder(folderService.getFolder(folderId, userId))
+//                .note(noteService.getNoteById(noteId))
                 .build();
         Tag createdTag = repository.save(tag);
         log.info("Tag with title={} was created", title);

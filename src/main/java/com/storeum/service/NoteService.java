@@ -30,6 +30,7 @@ public class NoteService {
     private final FolderService folderService;
     private final NoteValidator validator;
     private final UrlTitleExtractor titleExtractor;
+    private final TagService tagService;
 
     public Note getNoteById(Long id) {
         log.info("Trying to get note, id={}", id);
@@ -95,6 +96,6 @@ public class NoteService {
     public String deleteNote(Long noteId) {
         log.info("Trying to delete note, id={}", noteId);
         noteRepository.deleteById(noteId);
-        return "Note successfully deleted, id=" + noteId;
+        return String.format("Note successfully deleted, id=%s", noteId);
     }
 }

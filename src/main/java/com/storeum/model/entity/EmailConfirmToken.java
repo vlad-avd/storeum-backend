@@ -12,7 +12,8 @@ import java.time.LocalDateTime;
 @AllArgsConstructor
 @NoArgsConstructor
 @Entity(name = "email_confirm_token")
-    public class EmailConfirmToken {
+@ToString
+public class EmailConfirmToken {
 
     @Id
     @SequenceGenerator(name = "ect_seq", sequenceName = "ec_token_sequence", allocationSize = 10)
@@ -32,5 +33,6 @@ import java.time.LocalDateTime;
 
     @ManyToOne
     @JsonIgnore
+    @ToString.Exclude
     private User user;
 }

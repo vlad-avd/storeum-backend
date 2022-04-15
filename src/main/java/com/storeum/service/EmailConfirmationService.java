@@ -60,7 +60,7 @@ public class EmailConfirmationService {
         tokenRepository.save(tokenEntity);
         User user = tokenEntity.getUser();
         user.setEnabled(true);
-        userService.createUser(user);
+        userService.save(user);
         log.info("Email was confirmed, tokenEntity={} ", tokenEntity);
 
         return new GenericResponse<>("Email successfully confirmed", HttpStatus.OK);

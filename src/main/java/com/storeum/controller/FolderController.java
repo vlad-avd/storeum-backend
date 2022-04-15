@@ -22,13 +22,6 @@ public class FolderController {
 
     private final FolderService folderService;
 
-    @GetMapping("/users/{userId}/folders/{folderId}")
-    public ResponseEntity<Folder> getFolder(@PathVariable Long userId, @PathVariable Long folderId) {
-        MDC.put("userId", String.valueOf(userId));
-        Folder folder = folderService.getFolder(folderId, userId);
-        return ResponseEntity.ok(folder);
-    }
-
     @GetMapping("/users/{userId}/folders")
     public List<Folder> getUserFolders(@PathVariable Long userId) {
         MDC.put("userId", String.valueOf(userId));

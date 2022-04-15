@@ -49,16 +49,15 @@ public class AuthController {
     }
 
     @PostMapping("/logout")
-    public ResponseEntity<String> logoutUser(@RequestBody LogoutRequest request,
-                                             @AuthenticationPrincipal CustomUserDetails user) {
-        MDC.put("userId", String.valueOf(user.getId()));
+    public ResponseEntity<String> logoutUser(@RequestBody LogoutRequest request) {
+        MDC.put("userId", String.valueOf(request.getUserId()));
         String response = authService.logout(request);
         return ResponseEntity.ok(response);
     }
 
-    @PostMapping("/exhange-oauth")
-    public ResponseEntity<JwtResponse> exchangeOAuthToken(@RequestBody OAuthTokenRequest request) {
-        JwtResponse response = authService.exchangeOAuthToken(request.getToken());
+    @GetMapping("/exhange-oauth")
+    public ResponseEntity<JwtResponse> exchangeOAuthToken(@RequestParam String token) {
+        JwtResponse response = authService.exchangeOAuthToken(token);
         return ResponseEntity.ok(response);
     }
 }
