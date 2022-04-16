@@ -41,9 +41,14 @@ public class NoteService {
     }
 
     public List<Note> getFolderNotes(Long folderId, Long userId, Integer pageNumber) {
-        log.info("Trying to get folder notes, folderId={}", folderId);
-        Pageable page = PageRequest.of(pageNumber, 12, Sort.by("createdAt").descending());
-        return noteRepository.findNotesByFolderIdAndUserId(folderId, userId, page);
+        if (pageNumber != null) {
+            log.info("Trying to get folder notes, folderId={}, page={}", folderId, pageNumber);
+            Pageable page = PageRequest.of(pageNumber, 12, Sort.by("createdAt").descending());
+            return noteRepository.findNotesByFolderIdAndUserId(folderId, userId, page);
+        } else {
+            log.info("Trying to get folder notes, folderId={}", folderId);
+            return noteRepository.findNotesByFolderIdAndUserId(folderId, userId);
+        }
     }
 
     @Transactional

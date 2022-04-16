@@ -10,6 +10,8 @@ import java.util.Optional;
 public interface NoteRepository extends JpaRepository<Note, Long> {
 
     List<Note> findNotesByFolderIdAndUserId(Long folderId, Long userId, Pageable page);
+
+    List<Note> findNotesByFolderIdAndUserId(Long folderId, Long userId);
     
     Optional<Note> findByIdAndFolderIdAndUserId(Long noteId, Long folderId, Long userId);
 

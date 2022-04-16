@@ -26,7 +26,7 @@ public class NoteController {
     @GetMapping("/users/{userId}/folders/{folderId}/notes")
     public List<Note> getFolderNotes(@PathVariable Long userId,
                                      @PathVariable Long folderId,
-                                     @RequestParam("page") Integer pageNumber) {
+                                     @RequestParam(value = "page", required = false) Integer pageNumber) {
         return noteService.getFolderNotes(folderId, userId, pageNumber);
     }
 
