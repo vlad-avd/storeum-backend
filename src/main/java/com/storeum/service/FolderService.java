@@ -8,6 +8,7 @@ import com.storeum.repository.FolderRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
@@ -45,6 +46,7 @@ public class FolderService {
         folder.setTitle(request.getTitle());
 
         Folder createdFolder = folderRepository.save(folder);
+        //TODO: toString tags is null
         log.info("Folder was successfully created, folder={}", folder);
         return createdFolder;
     }
@@ -56,7 +58,10 @@ public class FolderService {
                 request.getParentFolderId());
 
         Folder folder = getFolder(folderId, userId);
-        Folder parentFolder = getFolder(request.getParentFolderId(), userId);
+
+        Folder parentFolder = request.getParentFolderId() != null
+                ? getFolder(request.getParentFolderId(), userId)
+                : null;
 
         folder.setTitle(request.getTitle());
         folder.setParentFolder(parentFolder);
@@ -66,6 +71,7 @@ public class FolderService {
         return editedFolder;
     }
 
+    @Transactional
     public String deleteFolder(Long folderId, Long userId) {
         log.info("Trying to delete folder, id={}", folderId);
         folderRepository.deleteByIdAndUserId(folderId, userId);

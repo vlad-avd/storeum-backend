@@ -29,8 +29,8 @@ public class Folder {
     private String title;
 
     @ManyToOne
-//    @JsonIncludeProperties({"id"})
-    @JsonIgnore
+    @JsonIncludeProperties({"id"})
+//    @JsonIgnore
     private Folder parentFolder;
 
     @OneToMany(mappedBy = "parentFolder", cascade = CascadeType.ALL, orphanRemoval = true)

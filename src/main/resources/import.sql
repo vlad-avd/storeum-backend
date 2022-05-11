@@ -5,8 +5,8 @@ VALUES
 INSERT INTO users(id, first_name, email, password, is_enabled)
 VALUES
 -- passwords are encoded: 'user' and 'admin' accordingly
-    (1, 'user', 'user@gmail.com', '$2a$12$M0sPZsqwKvGdPzmkITDnPuFTDbCzGGsjvHXaA3PUEdYYJSymIXESG', 'true'),
-    (2, 'admin', 'admin@gmail.com', '$2a$12$YfEgDr9gKxxMoEjZY5WD9eXVkT3h9b.IFMc6Fa8MSwvZbAeGtxo1W', 'true');
+(1, 'user', 'user@gmail.com', '$2a$12$M0sPZsqwKvGdPzmkITDnPuFTDbCzGGsjvHXaA3PUEdYYJSymIXESG', 'true'),
+(2, 'admin', 'admin@gmail.com', '$2a$12$YfEgDr9gKxxMoEjZY5WD9eXVkT3h9b.IFMc6Fa8MSwvZbAeGtxo1W', 'true');
 
 INSERT INTO user_roles(user_id, role_id)
 VALUES
@@ -50,6 +50,14 @@ VALUES
     (23, 'Lorem', 'Ipsum', NULL, 3, 1),
     (24, 'Lorem', 'Ipsum', NULL, 3, 1),
     (25, 'Lorem', 'Ipsum', NULL, 3, 1);
+
+INSERT INTO tag(id, title, note_id, folder_id, user_id)
+VALUES
+    (1, 'project', 3, 3 ,1),
+    (2, 'mvp', 3, 3 ,1),
+    (3, 'c++', 4, 3 ,1),
+    (4, 'linux', 4, 3 ,1),
+    (5, 'graphic', 4, 3 ,1);
 
 -- start_index = table_size + sequence_incremented_size
 ALTER SEQUENCE user_sequence RESTART WITH 12;

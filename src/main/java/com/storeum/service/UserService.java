@@ -30,6 +30,7 @@ public class UserService {
 
     public void save(User user) {
         userRepository.save(user);
+        //TODO: when update user, it logs that last is created
         log.info("User was created, user={} ", user);
     }
 }
