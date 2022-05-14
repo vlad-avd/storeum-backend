@@ -6,6 +6,7 @@ import lombok.*;
 
 import javax.persistence.*;
 import java.time.LocalDateTime;
+import java.util.HashSet;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -42,7 +43,7 @@ public class Note {
             joinColumns = @JoinColumn(name = "note_id"),
             inverseJoinColumns = @JoinColumn(name = "tag_id"))
     @JsonIncludeProperties({"id", "title"})
-    private Set<Tag> tags;
+    private Set<Tag> tags = new HashSet<>();
 
     private LocalDateTime createdAt;
 
@@ -55,7 +56,11 @@ public class Note {
                 ", title='" + title + '\'' +
                 ", description='" + description + '\'' +
                 ", link='" + link + '\'' +
-                ", tags=[" + tags.stream().map(Tag::getTitle).collect(Collectors.joining(", ")) + "]" +
+                ", tags=[" +
+                (tags != null
+                        ? tags.stream().map(Tag::getTitle).collect(Collectors.joining(", "))
+                        : ""
+                ) + "]" +
                 ", createdAt=" + createdAt +
                 ", updatedAt=" + updatedAt +
                 '}';

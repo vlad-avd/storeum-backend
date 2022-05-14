@@ -45,7 +45,7 @@ public class Folder {
 
     @OneToMany(mappedBy = "folder", cascade = CascadeType.ALL, orphanRemoval = true)
     @JsonIncludeProperties({"id", "title"})
-    private Set<Tag> tags;
+    private Set<Tag> tags = new HashSet<>();
     @ManyToOne
     @JsonIgnore
     private User user;
@@ -55,7 +55,11 @@ public class Folder {
         return "Folder{" +
                 "id=" + id +
                 ", title='" + title + '\'' +
-                ", tags=[" + tags.stream().map(Tag::getTitle).collect(Collectors.joining(", ")) + "]" +
+                ", tags=[" +
+                (tags != null
+                        ? tags.stream().map(Tag::getTitle).collect(Collectors.joining(", "))
+                        : ""
+                ) + "]" +
                 '}';
     }
 }

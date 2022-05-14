@@ -2,18 +2,15 @@ package com.storeum.service;
 
 import com.storeum.exception.ResourceNotFoundException;
 import com.storeum.model.entity.Folder;
-import com.storeum.model.entity.Tag;
 import com.storeum.payload.request.CreateFolderRequest;
 import com.storeum.payload.request.EditFolderRequest;
-import com.storeum.payload.response.FolderResponse;
-import com.storeum.payload.response.TagResponse;
 import com.storeum.repository.FolderRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.*;
+import java.util.List;
 
 @Service
 @RequiredArgsConstructor
@@ -49,12 +46,11 @@ public class FolderService {
         folder.setTitle(request.getTitle());
 
         Folder createdFolder = folderRepository.save(folder);
-        //TODO: toString tags is null
         log.info("Folder was successfully created, folder={}", folder);
         return createdFolder;
     }
 
-    public FolderResponse editFolder(EditFolderRequest request, Long folderId, Long userId) {
+    public Folder editFolder(EditFolderRequest request, Long folderId, Long userId) {
         log.info("Edit folder request received, folderId={}, title={}, parentFolderId={}",
                 folderId,
                 request.getTitle(),
@@ -70,9 +66,8 @@ public class FolderService {
         folder.setParentFolder(parentFolder);
 
         Folder editedFolder = folderRepository.save(folder);
-        FolderResponse folderResponse = buildFolderResponse(editedFolder);
         log.info("Folder was successfully edited, folder={}", editedFolder);
-        return folderResponse;
+        return editedFolder;
     }
 
     @Transactional
@@ -81,32 +76,5 @@ public class FolderService {
         folderRepository.deleteByIdAndUserId(folderId, userId);
         log.info("Folder successfully deleted, id={}", folderId);
         return String.format("Folder successfully deleted, id=%s", folderId);
-    }
-
-    private FolderResponse buildFolderResponse(Folder folder) {
-
-        List<FolderResponse> subFolders = folder.getSubFolders() != null
-                ? buildSubFolders(folder.getSubFolders())
-                : new ArrayList<>();
-
-        return FolderResponse.builder()
-                .id(folder.getId())
-                .title(folder.getTitle())
-                .parentFolderId(folder.getParentFolder().getId())
-                .tags(buildTags(folder.getTags()))
-                .subFolders(subFolders)
-                .build();
-    }
-
-    private List<FolderResponse> buildSubFolders(Set<Folder> folders) {
-        return folders.stream()
-                .map(this::buildFolderResponse)
-                .toList();
-    }
-
-    private List<TagResponse> buildTags(Set<Tag> tags) {
-        return tags.stream()
-                .map(TagResponse::new)
-                .toList();
     }
 }
