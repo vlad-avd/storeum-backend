@@ -2,16 +2,11 @@ package com.storeum.model.entity;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIncludeProperties;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
-import lombok.ToString;
+import lombok.*;
 
 import javax.persistence.*;
-import javax.validation.constraints.NotBlank;
-import javax.validation.constraints.Size;
-import java.util.ArrayList;
-import java.util.List;
+import java.util.HashSet;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 @Entity
@@ -19,6 +14,19 @@ import java.util.stream.Collectors;
 @Getter
 @Setter
 @NoArgsConstructor
+@NamedEntityGraphs(
+        @NamedEntityGraph(name = "entireFolderTree",
+                attributeNodes = {
+                        @NamedAttributeNode(value = "subFolders", subgraph = "childFolders"),
+                        @NamedAttributeNode(value = "tags"),
+                },
+                subgraphs = @NamedSubgraph(name = "childFolders",
+                        attributeNodes = {
+                                @NamedAttributeNode("subFolders"),
+                                @NamedAttributeNode("tags"),
+                        })
+        )
+)
 public class Folder {
 
     @Id
@@ -30,15 +38,14 @@ public class Folder {
 
     @ManyToOne
     @JsonIncludeProperties({"id"})
-//    @JsonIgnore
     private Folder parentFolder;
 
     @OneToMany(mappedBy = "parentFolder", cascade = CascadeType.ALL, orphanRemoval = true)
-    private List<Folder> subFolders = new ArrayList<>();
+    private Set<Folder> subFolders = new HashSet<>();
 
     @OneToMany(mappedBy = "folder", cascade = CascadeType.ALL, orphanRemoval = true)
     @JsonIncludeProperties({"id", "title"})
-    private List<Tag> tags;
+    private Set<Tag> tags;
     @ManyToOne
     @JsonIgnore
     private User user;

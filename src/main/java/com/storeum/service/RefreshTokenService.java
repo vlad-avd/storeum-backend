@@ -50,10 +50,10 @@ public class RefreshTokenService {
         return token;
     }
 
-    public void deleteByUserId(Long userId) {
+    public void deleteById(String refreshToken) {
         log.info("Trying to delete refresh token");
-        String errorMessage = String.format("There is no refresh token in DB associated with userId=%s", userId);
-        refreshTokenRepository.deleteByUserId(userId)
+        String errorMessage = "There is no refresh token in DB associated with userId=";
+        refreshTokenRepository.deleteByToken(refreshToken)
                 .orElseThrow(() -> new ResourceNotFoundException(errorMessage));
     }
 }

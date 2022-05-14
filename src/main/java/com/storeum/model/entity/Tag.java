@@ -23,10 +23,6 @@ public class Tag {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JsonIgnore
-    private Note note;
-
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JsonIgnore
     private Folder folder;
 
     @ManyToOne(fetch = FetchType.LAZY)

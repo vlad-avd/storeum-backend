@@ -17,6 +17,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
+import java.util.HashSet;
 import java.util.List;
 
 import static com.storeum.model.ValidationStatus.FAIL;
@@ -70,8 +71,11 @@ public class NoteService {
 
         Folder folder = folderService.getFolder(folderId, userId);
         User user = userService.getUserById(userId);
+
+        List<Tag> tags = tagService.createTags(request.getTags(), folder);
         Note note = Note.builder()
                 .title(noteTitle)
+                .tags(new HashSet<>(tags))
                 .description(request.getDescription())
                 .link(request.getLink())
                 .folder(folder)
@@ -80,7 +84,6 @@ public class NoteService {
                 .updatedAt(LocalDateTime.now())
                 .build();
         Note createdNote = noteRepository.save(note);
-        tagService.createTags(request.getTags(), note);
 
         log.info("Note with id={} was created", createdNote.getId());
 
@@ -96,15 +99,27 @@ public class NoteService {
         note.setLink(request.getLink());
         note.setUpdatedAt(LocalDateTime.now());
 
-        List<Tag> removedTags = note.getTags().stream()
+        // clean up tags to remove (value from request) from current note tags array
+        List<Tag> tagsAfterRemoving = note.getTags().stream()
                 .filter(tag -> !request.getTagIdsToRemove().contains(tag.getId()))
                 .toList();
+
+        // prevent creation tags with given titles that already exists in DB
+        List<Tag> alreadyExistedTags = tagService.getExistingFolderTags(request.getTagTitlesToCreate(),
+                note.getFolder().getId(), note.getUser().getId());
+
+        List<String> tagsToCreate = request.getTagTitlesToCreate().stream()
+                .filter(title -> !alreadyExistedTags.stream().map(Tag::getTitle).toList().contains(title))
+                .toList();
+        List<Tag> newTags = tagService.createTags(tagsToCreate, note.getFolder());
+
         note.getTags().clear();
-        note.getTags().addAll(removedTags);
+        note.getTags().addAll(tagsAfterRemoving);
+        note.getTags().addAll(alreadyExistedTags);
+        note.getTags().addAll(newTags);
+
         Note editedNote = noteRepository.save(note);
         log.info("Note was successfully edited, note={}", editedNote);
-
-        tagService.createTags(request.getTagTitlesToCreate(), editedNote);
 
         return editedNote;
     }

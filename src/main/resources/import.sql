@@ -51,16 +51,21 @@ VALUES
     (24, 'Lorem', 'Ipsum', NULL, 3, 1),
     (25, 'Lorem', 'Ipsum', NULL, 3, 1);
 
-INSERT INTO tag(id, title, note_id, folder_id, user_id)
+INSERT INTO tag(id, title, folder_id, user_id)
 VALUES
-    (1, 'project', 3, 3 ,1),
-    (2, 'mvp', 3, 3 ,1),
-    (3, 'c++', 4, 3 ,1),
-    (4, 'linux', 4, 3 ,1),
-    (5, 'graphic', 4, 3 ,1);
+    (1, 'project', 3 ,1),
+    (2, 'mvp', 3 ,1),
+    (3, 'c++', 3 ,1),
+    (4, 'linux', 3 ,1),
+    (5, 'graphic', 3 ,1);
+
+INSERT INTO note_tags(note_id, tag_id)
+VALUES
+    (3, 1), (3, 2), (4, 3), (4, 4), (4, 5);
 
 -- start_index = table_size + sequence_incremented_size
 ALTER SEQUENCE user_sequence RESTART WITH 12;
 ALTER SEQUENCE folder_sequence RESTART WITH 18;
 ALTER SEQUENCE note_sequence RESTART WITH 35;
 ALTER SEQUENCE ec_token_sequence RESTART WITH 10;
+ALTER SEQUENCE tag_sequence RESTART WITH 15;

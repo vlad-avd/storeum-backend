@@ -103,7 +103,7 @@ public class AuthService {
     }
 
     public String logout(LogoutRequest request) {
-        refreshTokenService.deleteByUserId(request.getUserId());
+        refreshTokenService.deleteById(request.getRefreshToken());
         log.info("Logged out successfully");
         return "Log out successful";
     }

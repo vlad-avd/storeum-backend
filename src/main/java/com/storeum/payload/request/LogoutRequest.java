@@ -6,4 +6,5 @@ import lombok.Getter;
 public class LogoutRequest {
 
     private Long userId;
+    private String refreshToken;
 }

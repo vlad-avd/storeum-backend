@@ -15,12 +15,13 @@ spring:
       hibernate:
         time_zone: UTC
         dialect: org.hibernate.dialect.PostgreSQLDialect
+        format_sql: true
         hbm2ddl:
           import_files_sql_extractor: org.hibernate.tool.hbm2ddl.MultipleLinesSqlCommandExtractor
         jdbc:
           lob:
             non_contextual_creation: true
-  #    show-sql: true
+      show-sql: true
   mail:
     host: smtp.gmail.com
     port: 587
@@ -52,9 +53,9 @@ app:
   jwt-refresh-expiration-ms: ${STOREUM_JWT_REFRESH_EXPIRE_TIME}
   client-base-url: http://localhost:3000
 
-#debug: true
-#logging:
-#  level:
-#    org:
-#      springframework:
-#        context: DEBUG
+debug: true
+logging:
+  level:
+    org:
+      springframework:
+        context: DEBUG

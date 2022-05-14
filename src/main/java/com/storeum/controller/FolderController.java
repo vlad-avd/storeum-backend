@@ -3,6 +3,7 @@ package com.storeum.controller;
 import com.storeum.model.entity.Folder;
 import com.storeum.payload.request.CreateFolderRequest;
 import com.storeum.payload.request.EditFolderRequest;
+import com.storeum.payload.response.FolderResponse;
 import com.storeum.service.FolderService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -34,10 +35,10 @@ public class FolderController {
     }
 
     @PostMapping("/users/{userId}/folders/{folderId}")
-    public ResponseEntity<Folder> editFolder(@RequestBody EditFolderRequest request,
-                                             @PathVariable Long userId,
-                                             @PathVariable Long folderId) {
-        Folder folder = folderService.editFolder(request, folderId, userId);
+    public ResponseEntity<FolderResponse> editFolder(@RequestBody EditFolderRequest request,
+                                                     @PathVariable Long userId,
+                                                     @PathVariable Long folderId) {
+        FolderResponse folder = folderService.editFolder(request, folderId, userId);
         return ResponseEntity.ok(folder);
     }
 

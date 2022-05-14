@@ -6,7 +6,7 @@ import lombok.*;
 
 import javax.persistence.*;
 import java.time.LocalDateTime;
-import java.util.List;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 @Entity
@@ -37,9 +37,12 @@ public class Note {
     @JsonIgnore
     private User user;
 
-    @OneToMany(mappedBy = "note", cascade = CascadeType.ALL, orphanRemoval = true)
+    @ManyToMany
+    @JoinTable(name = "note_tags",
+            joinColumns = @JoinColumn(name = "note_id"),
+            inverseJoinColumns = @JoinColumn(name = "tag_id"))
     @JsonIncludeProperties({"id", "title"})
-    private List<Tag> tags;
+    private Set<Tag> tags;
 
     private LocalDateTime createdAt;
 
