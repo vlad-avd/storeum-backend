@@ -43,7 +43,7 @@ public class Note {
             joinColumns = @JoinColumn(name = "note_id"),
             inverseJoinColumns = @JoinColumn(name = "tag_id"))
     @JsonIncludeProperties({"id", "title"})
-    private Set<Tag> tags = new HashSet<>();
+    private Set<Tag> tags;
 
     private LocalDateTime createdAt;
 

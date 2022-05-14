@@ -1,0 +1,89 @@
+integrationTest {
+    jacoco {
+        destinationFile = file("$buildDir/jacoco/integrationTest.exec")
+    }
+}
+
+test {
+    jacoco {
+        destinationFile = file("$buildDir/jacoco/test.exec")
+    }
+}
+
+jacocoTestReport {
+    sourceSets sourceSets.main
+    executionData(integrationTest, test)
+    reports {
+        xml {
+            enabled true
+            destination file("${buildDir}/reports/jacoco-full/xml/report.xml")
+        }
+        html {
+            enabled true
+            destination file("${buildDir}/reports/jacoco-full/html")
+        }
+    }
+}
+
+task jacocoIntegrationTestReport(type: JacocoReport) {
+    sourceSets sourceSets.main
+    executionData integrationTest
+    reports {
+        xml {
+            enabled true
+            destination file("${buildDir}/reports/jacoco-integration/xml/report.xml")
+        }
+        html {
+            enabled true
+            destination file("${buildDir}/reports/jacoco-integration/html")
+        }
+    }
+}
+
+task jacocoUnitTestReport(type: JacocoReport) {
+    sourceSets sourceSets.main
+    executionData test
+    reports {
+        xml {
+            enabled true
+            destination file("${buildDir}/reports/jacoco-unit/xml/report.xml")
+        }
+        html {
+            enabled true
+            destination file("${buildDir}/reports/jacoco-unit/html")
+        }
+    }
+}
+
+jacocoTestCoverageVerification {
+    executionData files("$buildDir/jacoco/integrationTest.exec")
+    violationRules {
+        rule {
+            excludes = [
+
+            ]
+            element = 'CLASS'
+            limit {
+                counter = 'LINE'
+                value = 'COVEREDRATIO'
+                minimum = 0.00
+            }
+        }
+        rule {
+            excludes = [
+
+            ]
+            element = 'CLASS'
+            limit {
+                counter = 'BRANCH'
+                value = 'COVEREDRATIO'
+                minimum = 0.00
+            }
+        }
+    }
+}
+
+test.finalizedBy jacocoUnitTestReport
+jacocoUnitTestReport.finalizedBy jacocoIntegrationTestReport
+jacocoIntegrationTestReport.finalizedBy jacocoTestReport
+check.dependsOn jacocoTestCoverageVerification
