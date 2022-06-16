@@ -6,7 +6,6 @@ import lombok.*;
 
 import javax.persistence.*;
 import java.time.LocalDateTime;
-import java.util.HashSet;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -39,7 +38,8 @@ public class Note {
     private User user;
 
     @ManyToMany
-    @JoinTable(name = "note_tags",
+    @JoinTable(
+            name = "note_tags",
             joinColumns = @JoinColumn(name = "note_id"),
             inverseJoinColumns = @JoinColumn(name = "tag_id"))
     @JsonIncludeProperties({"id", "title"})

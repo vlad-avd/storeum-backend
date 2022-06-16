@@ -10,4 +10,12 @@ import java.util.List;
 public interface TagRepository extends JpaRepository<Tag, Long> {
 
     List<Tag> findByTitleInAndFolderIdAndUserId(List<String> titles, Long folderId, Long userId);
+
+    List<Tag> findByUserId(Long userId);
+
+    List<Tag> findByUserIdAndFolderId(Long userId, Long folderId);
+
+    List<Tag> findByUserIdAndFolderIdAndNoteId(Long userId, Long folderId, Long noteId);
+
+    void deleteByUserIdAndNoteIsNull(Long userId);
 }

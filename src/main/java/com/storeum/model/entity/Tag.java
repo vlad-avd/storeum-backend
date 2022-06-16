@@ -4,6 +4,7 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.*;
 
 import javax.persistence.*;
+import java.util.Set;
 
 @Entity
 @Table(name = "tag")
@@ -28,6 +29,10 @@ public class Tag {
     @ManyToOne(fetch = FetchType.LAZY)
     @JsonIgnore
     private User user;
+
+    @ManyToMany(mappedBy="tags")
+    @JsonIgnore
+    private Set<Note> note;
 
     @Override
     public String toString() {

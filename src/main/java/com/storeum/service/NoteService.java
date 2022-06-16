@@ -99,26 +99,13 @@ public class NoteService {
         note.setLink(request.getLink());
         note.setUpdatedAt(LocalDateTime.now());
 
-        // clean up tags to remove (value from request) from current note tags array
-        List<Tag> tagsAfterRemoving = note.getTags().stream()
-                .filter(tag -> !request.getTagIdsToRemove().contains(tag.getId()))
-                .toList();
-
-        // prevent creation tags with given titles that already exists in DB
-        List<Tag> alreadyExistedTags = tagService.getExistingFolderTags(request.getTagTitlesToCreate(),
-                note.getFolder().getId(), note.getUser().getId());
-
-        List<String> tagsToCreate = request.getTagTitlesToCreate().stream()
-                .filter(title -> !alreadyExistedTags.stream().map(Tag::getTitle).toList().contains(title))
-                .toList();
-        List<Tag> newTags = tagService.createTags(tagsToCreate, note.getFolder());
+        List<Tag> tags = tagService.createTags(request.getTags(), note.getFolder());
 
         note.getTags().clear();
-        note.getTags().addAll(tagsAfterRemoving);
-        note.getTags().addAll(alreadyExistedTags);
-        note.getTags().addAll(newTags);
+        note.getTags().addAll(tags);
 
         Note editedNote = noteRepository.save(note);
+        tagService.cleanUpDetachedTags(userId);
         log.info("Note was successfully edited, note={}", editedNote);
 
         return editedNote;
