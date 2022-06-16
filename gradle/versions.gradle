@@ -1,5 +1,5 @@
 ext {
-    postgresVersion = '42.2.23.jre7'
+    postgresVersion = '42.4.0'
 
     junitVersion = '5.7.2'
     springSecurityTestVersion = '5.5.1'
