@@ -31,7 +31,7 @@ public class TagService {
     }
 
     public List<Tag> createTags(List<String> titles, Folder folder) {
-        TagDto tagDto = getNonExistingFolderTags(titles, folder.getId(), folder.getUser().getId());
+        TagDto tagDto = groupTags(titles, folder.getId(), folder.getUser().getId());
 
         List<Tag> tags = tagDto.getTitlesToCreate().stream()
                 .map(it -> buildTag(it, folder))
@@ -50,12 +50,7 @@ public class TagService {
         }};
     }
 
-    public void cleanUpDetachedTags(Long userId) {
-        repository.deleteByUserIdAndNoteIsNull(userId);
-    }
-
-    //pair: key - tag tile, value - is tag already exists
-    public TagDto getNonExistingFolderTags(List<String> titles, Long folderId, Long userId) {
+    public TagDto groupTags(List<String> titles, Long folderId, Long userId) {
         // prevent creation tags with given titles that already exists in DB
         List<Tag> alreadyExistingTags = repository.findByTitleInAndFolderIdAndUserId(titles, folderId, userId);
         List<String> titlesToCreate = titles.stream()
@@ -64,6 +59,10 @@ public class TagService {
                 .toList();
 
         return new TagDto(titlesToCreate, alreadyExistingTags);
+    }
+
+    public void cleanUpDetachedTags(Long userId) {
+        repository.deleteByUserIdAndNoteIsNull(userId);
     }
 
     private Tag buildTag(String title, Folder folder) {

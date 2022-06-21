@@ -105,6 +105,7 @@ public class NoteService {
         note.getTags().addAll(tags);
 
         Note editedNote = noteRepository.save(note);
+        //rm tags that already has no note relationship
         tagService.cleanUpDetachedTags(userId);
         log.info("Note was successfully edited, note={}", editedNote);
 
